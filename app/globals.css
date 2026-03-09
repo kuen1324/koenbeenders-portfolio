@@ -2085,7 +2085,7 @@ footer {
   position: relative;
   background-color: var(--bg);
   color: var(--text-primary);
-  overflow: hidden;
+  overflow: clip;
   padding: 120px 0;
   min-height: 100vh;
 }

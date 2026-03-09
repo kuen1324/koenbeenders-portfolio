@@ -54,10 +54,18 @@ export default function Gallery({ sectionRef }: GalleryProps) {
     // Scroll reveal
     useGSAP(
         () => {
-            if (!containerRef.current || !sectionRef.current) return;
+            if (!containerRef.current) return;
 
             const items = containerRef.current.querySelectorAll(".gallery-item");
             if (items.length === 0) return;
+
+            // Fallback: if sectionRef is not ready, make items visible immediately
+            if (!sectionRef.current) {
+                items.forEach(item => {
+                    (item as HTMLElement).style.opacity = '1';
+                });
+                return;
+            }
 
             // Clean, stable entrance reveal
             items.forEach((item, index) => {
