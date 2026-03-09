@@ -122,8 +122,8 @@ export default function HeroParticles() {
     }, []);
 
     return (
-        <div ref={containerRef} className="particles-wrap">
-            <canvas ref={canvasRef} className="particles-canvas" />
+        <div ref={containerRef} className="particles-wrap" suppressHydrationWarning>
+            <canvas ref={canvasRef} className="particles-canvas" suppressHydrationWarning />
         </div>
     );
 }
