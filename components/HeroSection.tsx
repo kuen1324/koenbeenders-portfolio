@@ -6,8 +6,6 @@ import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import MagneticEffect from './ui/MagneticEffect';
 
-import HeroShaderBackground from './ui/hero-shader-background';
-
 export default function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const preambleRef = useRef<HTMLParagraphElement>(null);
@@ -93,8 +91,7 @@ export default function HeroSection() {
         minHeight: '100dvh',
       }}
     >
-      {/* LAYER 1: CSS-only ambient atmosphere */}
-      <HeroShaderBackground />
+      {/* LAYER 1: CSS-only ambient atmosphere (removed unstable shader background) */}
 
       {/* LAYER 2: Editorial Structure */}
       <div
