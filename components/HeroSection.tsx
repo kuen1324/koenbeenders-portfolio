@@ -1,5 +1,6 @@
 'use client';
 import { useRef } from 'react';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
 import gsap from 'gsap';
@@ -7,7 +8,8 @@ import { useGSAP } from '@gsap/react';
 import { use3DCursorTilt } from '@/hooks/use3DCursorTilt';
 import { useCursorLighting } from '@/hooks/useCursorLighting';
 import MagneticEffect from './ui/MagneticEffect';
-import HeroParticles from './HeroParticles';
+
+const HeroParticles = dynamic(() => import('./HeroParticles'), { ssr: false });
 
 export default function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
