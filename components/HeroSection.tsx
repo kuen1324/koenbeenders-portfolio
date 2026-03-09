@@ -1,132 +1,83 @@
 'use client';
 import { useRef } from 'react';
-import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
-import { use3DCursorTilt } from '@/hooks/use3DCursorTilt';
-import { useCursorLighting } from '@/hooks/useCursorLighting';
 import MagneticEffect from './ui/MagneticEffect';
 
-const HeroParticles = dynamic(() => import('./HeroParticles'), { ssr: false });
+import HeroShaderBackground from './ui/hero-shader-background';
 
 export default function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const preambleRef = useRef<HTMLParagraphElement>(null);
-  const labelRef = useRef<HTMLParagraphElement>(null);
-  const identityRef = useRef<HTMLParagraphElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const titleSpanRef = useRef<HTMLSpanElement>(null);
+  const title1Ref = useRef<HTMLSpanElement>(null);
+  const title2Ref = useRef<HTMLSpanElement>(null);
+  const title3Ref = useRef<HTMLSpanElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const ctaContainerRef = useRef<HTMLDivElement>(null);
   const imageWrapRef = useRef<HTMLDivElement>(null);
+  const imageInnerRef = useRef<HTMLDivElement>(null);
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
-  const atmosphereRef = useRef<HTMLDivElement>(null);
 
-  // Subtle 3D cursor tilt (±2.5deg max - more refined)
-  use3DCursorTilt(imageWrapRef, {
-    maxRotateX: 2.5,
-    maxRotateY: 2.5,
-    maxShiftX: 4,
-    maxShiftY: 4,
-    duration: 0.6,
-  });
-
-  // Cursor-driven lighting overlay
-  useCursorLighting(sectionRef);
-
-  // PHASE 3-4: Cinematic entrance with premium motion choreography
   useGSAP(() => {
-    // Exit early if refs not ready
     if (!sectionRef.current) return;
 
+    // Premium entrance choreography (Safe, purely GSAP on refs)
     const tl = gsap.timeline({
-      defaults: { ease: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' }, // Premium easing
-      delay: 0.2,
+      defaults: { ease: 'power4.out' },
+      delay: 0.2, // Small delay for hydration safety
     });
 
-    // 1. Atmospheric background (foundation - sets cinematic mood)
-    tl.fromTo(
-      atmosphereRef.current,
-      { opacity: 0 },
-      { opacity: 1, duration: 0.9 },
-      0
+    // 2. Image container reveals (translation and scale)
+    tl.fromTo(imageWrapRef.current, 
+      { opacity: 0, y: 40, scale: 0.95 },
+      { opacity: 1, y: 0, scale: 1, duration: 1.8, ease: 'expo.out' }, 
+      0.1
     );
-
-    // 2. Hero image enters (premium visual anchor)
-    tl.fromTo(
-      imageWrapRef.current,
-      { opacity: 0, y: 36, scale: 0.97 },
-      { opacity: 1, y: 0, scale: 1, duration: 1.2, ease: 'power3.out' },
+    
+    // Internal image subtle parallax/scale effect
+    tl.fromTo(imageInnerRef.current,
+      { scale: 1.1 },
+      { scale: 1, duration: 2, ease: 'power3.out' },
       0.1
     );
 
-    // 3. Preamble (narrative frame)
-    tl.fromTo(
-      preambleRef.current,
-      { opacity: 0, y: 12 },
-      { opacity: 1, y: 0, duration: 0.5 },
+    // 3. Text reveals with clipping effect (overflow hidden on parent)
+    tl.fromTo(preambleRef.current, 
+      { opacity: 0, x: -15 }, 
+      { opacity: 1, x: 0, duration: 1, ease: 'power3.out' }, 
+      0.4
+    );
+
+    // Staggered title lines vertically up
+    tl.fromTo([title1Ref.current, title2Ref.current, title3Ref.current], 
+      { yPercent: 120, opacity: 0 }, 
+      { yPercent: 0, opacity: 1, duration: 1.2, stagger: 0.15, ease: 'expo.out' }, 
       0.5
     );
 
-    // 4. Label (design role)
-    tl.fromTo(
-      labelRef.current,
-      { opacity: 0, y: 10 },
-      { opacity: 1, y: 0, duration: 0.5 },
-      0.65
-    );
-
-    // 5. Identity (personal signature)
-    tl.fromTo(
-      identityRef.current,
-      { opacity: 0, y: 8 },
-      { opacity: 1, y: 0, duration: 0.45 },
-      0.8
-    );
-
-    // 6. Main headline (power moment)
-    tl.fromTo(
-      titleRef.current,
-      { opacity: 0, y: 28 },
-      { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' },
+    // Subtitle fade and slide
+    tl.fromTo(subtitleRef.current, 
+      { opacity: 0, y: 20 }, 
+      { opacity: 1, y: 0, duration: 1, ease: 'power3.out' }, 
       0.9
     );
 
-    // 7. "future" emphasis (signature interaction - the focal moment)
-    if (titleSpanRef.current) {
-      tl.fromTo(
-        titleSpanRef.current,
-        { opacity: 0, y: 12 },
-        { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' },
-        1.5
-      );
-    }
-
-    // 8. Supporting subtext (editorial context)
-    tl.fromTo(
-      subtitleRef.current,
-      { opacity: 0, y: 18 },
-      { opacity: 1, y: 0, duration: 0.7 },
-      1.7
+    // CTAs
+    tl.fromTo(ctaContainerRef.current, 
+      { opacity: 0, y: 20 }, 
+      { opacity: 1, y: 0, duration: 1, ease: 'power3.out' }, 
+      1.1
     );
 
-    // 9. CTAs (call to action - premium buttons)
-    tl.fromTo(
-      ctaContainerRef.current,
-      { opacity: 0, y: 14 },
-      { opacity: 1, y: 0, duration: 0.6 },
-      2.0
+    // Scroll Indicator
+    tl.fromTo(scrollIndicatorRef.current, 
+      { opacity: 0, y: 10 }, 
+      { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, 
+      1.5
     );
 
-    // 10. Scroll indicator (invites downward exploration)
-    tl.fromTo(
-      scrollIndicatorRef.current,
-      { opacity: 0, scale: 0.85 },
-      { opacity: 1, scale: 1, duration: 0.5 },
-      2.3
-    );
   }, { scope: sectionRef });
 
   return (
@@ -142,266 +93,226 @@ export default function HeroSection() {
         minHeight: '100dvh',
       }}
     >
-      {/* LAYER 1: Structure + Atmospheric Background */}
-      <div
-        ref={atmosphereRef}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: `
-            radial-gradient(ellipse at 70% 40%, rgba(27, 95, 214, 0.08) 0%, transparent 45%),
-            linear-gradient(135deg,
-              rgba(15, 23, 42, 0) 0%,
-              rgba(20, 28, 50, 0.02) 40%,
-              rgba(25, 35, 60, 0.04) 100%)
-          `,
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
+      {/* LAYER 1: CSS-only ambient atmosphere */}
+      <HeroShaderBackground />
 
-      <HeroParticles />
-
-      {/* LAYER 2: Cursor-driven Lighting Overlay (Signature Interaction foundation) */}
-      <div
-        className="hero-lighting"
-        style={{
-          position: 'absolute',
-          inset: 0,
-          pointerEvents: 'none',
-          background: 'radial-gradient(circle 600px at var(--cursor-x, 50%) var(--cursor-y, 50%), rgba(255, 255, 255, 0.08) 0%, transparent 70%)',
-          opacity: 0,
-          transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          willChange: 'opacity',
-          zIndex: 1,
-          mixBlendMode: 'screen',
-        }}
-      />
-
-      {/* LAYER 3: Premium Content Structure */}
+      {/* LAYER 2: Editorial Structure */}
       <div
         style={{
           position: 'relative',
           zIndex: 2,
           display: 'grid',
-          gridTemplateColumns: '1fr 1.2fr',
-          gap: 'clamp(2rem, 6vw, 5rem)',
+          gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.1fr)',
+          columnGap: 'clamp(2rem, 6vw, 6rem)',
+          rowGap: '3rem',
           alignItems: 'center',
           minHeight: '100dvh',
-          padding: 'clamp(2rem, 6vh, 4rem) clamp(1.5rem, 4vw, 3rem)',
-          maxWidth: '1440px',
+          padding: 'clamp(4rem, 10vh, 6rem) clamp(1.5rem, 5vw, 4rem)',
+          maxWidth: '1600px',
           margin: '0 auto',
         }}
+        className="hero-grid"
       >
-        {/* Content Column - Left */}
+        {/* Content Column */}
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: 'var(--space-8)',
-            maxWidth: '540px',
-            paddingRight: 'clamp(1rem, 3vw, 2rem)',
+            justifyContent: 'center',
+            height: '100%',
           }}
         >
-          {/* Preamble - Provocative framing */}
-          <p
-            ref={preambleRef}
-            style={{
-              fontSize: 'var(--fs-sm)',
-              lineHeight: 1.5,
-              color: 'var(--text-secondary)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              fontWeight: 600,
-              margin: 0,
-              opacity: 0,
-            }}
-          >
-            Intersection of engineering & aesthetics
-          </p>
-
-          {/* Label - Role */}
-          <p
-            ref={labelRef}
-            style={{
-              fontSize: 'var(--fs-base)',
-              color: 'var(--accent)',
-              fontWeight: 600,
-              margin: 0,
-              letterSpacing: '0.02em',
-              opacity: 0,
-            }}
-          >
-            Strategic Design Director
-          </p>
-
-          {/* Identity - Name & Discipline */}
-          <p
-            ref={identityRef}
-            style={{
-              fontSize: 'clamp(0.875rem, 1.5vw, 1rem)',
-              color: 'var(--text-tertiary)',
-              fontWeight: 500,
-              margin: 0,
-              letterSpacing: '0.01em',
-              opacity: 0,
-            }}
-          >
-            Koen Beenders — Creative Developer
-          </p>
-
-          {/* Headline - The power moment */}
-          <h1
-            ref={titleRef}
-            style={{
-              fontSize: 'clamp(2.5rem, 8vw, 4.5rem)',
-              fontWeight: 800,
-              fontFamily: 'var(--font-display)',
-              lineHeight: 0.95,
-              letterSpacing: '-0.03em',
-              color: 'var(--text-primary)',
-              margin: 0,
-              paddingTop: 'var(--space-4)',
-              opacity: 0,
-            }}
-          >
-            Designing the<br />
-            <span
-              ref={titleSpanRef}
-              style={{
-                fontStyle: 'italic',
-                color: 'var(--accent)',
-                fontWeight: 400,
-                opacity: 0,
-                display: 'inline-block',
-                transform: 'translateY(8px)',
+          {/* Preamble container */}
+          <div style={{ marginBottom: 'clamp(1.5rem, 4vh, 3rem)' }}>
+            <p 
+              ref={preambleRef} 
+              style={{ 
+                fontSize: '0.75rem', 
+                lineHeight: 1.8, 
+                color: 'var(--text-secondary)', 
+                textTransform: 'uppercase', 
+                letterSpacing: '0.2em', 
+                fontWeight: 600, 
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                margin: 0, 
+                opacity: 0 
               }}
             >
-              future
+              <span style={{ width: '2.5rem', height: '1px', background: 'var(--accent)' }} />
+              Strategic Design Director.
+            </p>
+          </div>
+
+          {/* Headline - Editorial staggered reveal */}
+          <h1 
+            style={{ 
+              fontSize: 'clamp(2.5rem, 6vw, 6rem)', 
+              fontWeight: 800, 
+              fontFamily: 'var(--font-display)', 
+              lineHeight: 1.05, 
+              letterSpacing: '-0.02em', 
+              color: 'var(--text-primary)', 
+              margin: '0 0 clamp(1.5rem, 4vh, 3rem) 0',
+            }}
+          >
+            <span style={{ display: 'block', overflow: 'hidden', paddingBottom: '0.1em', marginTop: '-0.1em' }}>
+              <span ref={title1Ref} style={{ display: 'block' }}>Intersection</span>
             </span>
-            .
+            <span style={{ display: 'block', overflow: 'hidden', paddingBottom: '0.1em', marginTop: '-0.1em' }}>
+              <span ref={title2Ref} style={{ display: 'block', color: 'var(--text-secondary)' }}>of design</span>
+            </span>
+            <span style={{ display: 'block', overflow: 'hidden', paddingBottom: '0.2em', marginTop: '-0.1em' }}>
+              <span ref={title3Ref} style={{ display: 'block', fontStyle: 'italic', fontWeight: 400, color: 'var(--accent)' }}>& engineering.</span>
+            </span>
           </h1>
 
-          {/* Supporting text - Editorial context */}
-          <p
-            ref={subtitleRef}
-            style={{
-              fontSize: 'clamp(1rem, 2vw, 1.25rem)',
-              lineHeight: 1.6,
-              color: 'var(--text-primary)',
-              margin: 0,
-              maxWidth: '500px',
-              opacity: 0,
-            }}
-          >
-            A cinematic approach to digital products. Architectural typography with purposeful motion. Building at the intersection of complex systems and premium experiences.
-          </p>
+          {/* Supporting Context & CTAs */}
+          <div style={{ display: 'grid', gap: '2.5rem', maxWidth: '480px', marginLeft: 'clamp(0px, 4vw, 2rem)' }}>
+            <p 
+              ref={subtitleRef} 
+              style={{ 
+                fontSize: 'clamp(1rem, 1.25vw, 1.125rem)', 
+                lineHeight: 1.7, 
+                color: 'var(--text-secondary)', 
+                margin: 0, 
+                opacity: 0,
+                fontWeight: 400,
+              }}
+            >
+              I build cinematic digital products and premium architectures. Blending rigorous strategy with uncompromising aesthetics to create experiences that resonate deeply.
+            </p>
 
-          {/* CTAs - Call to action with magnetic feel */}
-          <div
-            ref={ctaContainerRef}
-            style={{
-              display: 'flex',
-              gap: 'var(--space-4)',
-              paddingTop: 'var(--space-4)',
-              opacity: 0,
-            }}
-          >
-            <MagneticEffect strength={0.3}>
-              <Link
-                href="#work"
-                style={{
-                  padding: '1rem 1.75rem',
-                  fontSize: 'var(--fs-base)',
-                  fontWeight: 600,
-                  borderRadius: '0.5rem',
-                  background: 'var(--accent)',
-                  color: '#fff',
-                  textDecoration: 'none',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  cursor: 'pointer',
-                  border: 'none',
-                }}
-              >
-                View Work
-              </Link>
-            </MagneticEffect>
-            <MagneticEffect strength={0.25}>
-              <Link
-                href="#about"
-                style={{
-                  padding: '1rem 1.75rem',
-                  fontSize: 'var(--fs-base)',
-                  fontWeight: 600,
-                  borderRadius: '0.5rem',
-                  background: 'transparent',
-                  color: 'var(--text-primary)',
-                  textDecoration: 'none',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  cursor: 'pointer',
-                  border: '1px solid var(--border)',
-                }}
-              >
-                The Mission
-              </Link>
-            </MagneticEffect>
+            <div ref={ctaContainerRef} style={{ display: 'flex', gap: '1rem', opacity: 0, flexWrap: 'wrap' }}>
+              <MagneticEffect strength={0.2}>
+                <Link 
+                  href="#work" 
+                  style={{ 
+                    padding: '1.125rem 2rem', 
+                    fontSize: '0.875rem', 
+                    fontWeight: 600, 
+                    borderRadius: '2rem', 
+                    background: 'var(--text-primary)', 
+                    color: 'var(--bg)', 
+                    textDecoration: 'none', 
+                    display: 'inline-flex', 
+                    alignItems: 'center', 
+                    gap: '0.5rem', 
+                    transition: 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)', 
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.backgroundColor = 'var(--accent)'; e.currentTarget.style.color = 'white'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.backgroundColor = 'var(--text-primary)'; e.currentTarget.style.color = 'var(--bg)'; }}
+                >
+                  Explore Work
+                </Link>
+              </MagneticEffect>
+              <MagneticEffect strength={0.15}>
+                <Link 
+                  href="#about" 
+                  style={{ 
+                    padding: '1.125rem 2rem', 
+                    fontSize: '0.875rem', 
+                    fontWeight: 600, 
+                    borderRadius: '2rem', 
+                    background: 'transparent', 
+                    color: 'var(--text-primary)', 
+                    textDecoration: 'none', 
+                    display: 'inline-flex', 
+                    alignItems: 'center', 
+                    gap: '0.5rem', 
+                    transition: 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)', 
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.border = '1px solid var(--text-primary)'; e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.15)'; e.currentTarget.style.background = 'transparent'; }}
+                >
+                  My Perspective
+                </Link>
+              </MagneticEffect>
+            </div>
           </div>
         </div>
 
-        {/* Visual Column - Right (Portrait with 3D tilt) */}
-        <div
-          ref={imageWrapRef}
-          style={{
-            position: 'relative',
-            aspectRatio: '3/4',
-            perspective: '1200px',
-            willChange: 'transform',
-            opacity: 0,
+        {/* Visual Column */}
+        <div 
+          style={{ 
+            position: 'relative', 
+            height: 'clamp(400px, 80vh, 900px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
+          className="hero-image-col"
         >
+          {/* Main image wrapped with a premium glass border and shadow */}
           <div
+            ref={imageWrapRef}
             style={{
+              position: 'relative',
               width: '100%',
               height: '100%',
-              position: 'relative',
-              transformStyle: 'preserve-3d',
-              borderRadius: '2rem',
-              overflow: 'hidden',
-              boxShadow: `
-                0 20px 60px rgba(0, 0, 0, 0.15),
-                0 0 1px rgba(0, 0, 0, 0.1)
-              `,
+              maxHeight: '800px',
+              borderRadius: '24px',
+              padding: '1px', // Border wrapper for ultra-fine sub-pixel border
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.02) 100%)',
+              boxShadow: '0 30px 60px -10px rgba(0,0,0,0.5), 0 0 40px rgba(0,0,0,0.3)',
+              opacity: 0,
             }}
           >
-            <Image
-              src="/portrait.jpg"
-              alt="Koen Beenders — Creative Developer"
-              fill
-              priority
-              sizes="(max-width: 768px) 100vw, 50vw"
+            <div
               style={{
-                objectFit: 'cover',
-                objectPosition: 'center',
+                width: '100%',
+                height: '100%',
+                position: 'relative',
+                borderRadius: '23px',
+                overflow: 'hidden',
+                background: '#0a0a0a',
               }}
-            />
+            >
+              <div 
+                ref={imageInnerRef}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  position: 'relative',
+                }}
+              >
+                <Image
+                  src="/portrait.jpg"
+                  alt="Koen Beenders — Strategist & Developer"
+                  fill
+                  priority
+                  sizes="(max-width: 992px) 100vw, 50vw"
+                  style={{
+                    objectFit: 'cover',
+                    objectPosition: 'center',
+                    filter: 'contrast(1.05) brightness(0.95)',
+                  }}
+                />
+                
+                {/* Premium internal glow */}
+                <div 
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    boxShadow: 'inset 0 0 100px rgba(0,0,0,0.4)',
+                    pointerEvents: 'none',
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* LAYER 4: Scroll Indicator - Invites exploration */}
+      {/* LAYER 3: Scroll Indicator */}
       <div
         ref={scrollIndicatorRef}
         style={{
           position: 'absolute',
-          bottom: 'clamp(2rem, 4vh, 3rem)',
-          left: '50%',
-          transform: 'translateX(-50%)',
+          bottom: 'clamp(1.5rem, 4vh, 3rem)',
+          left: 'clamp(1.5rem, 5vw, 4rem)', // Aligned to left edge of grid padding instead of center
           zIndex: 3,
           pointerEvents: 'none',
           opacity: 0,
@@ -410,19 +321,45 @@ export default function HeroSection() {
         <div
           style={{
             display: 'flex',
-            flexDirection: 'column',
             alignItems: 'center',
-            gap: '0.75rem',
+            gap: '1rem',
             opacity: 0.6,
-            animation: 'scroll-bounce 2s ease-in-out infinite',
           }}
         >
-          <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>Scroll</span>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--text-secondary)' }}>
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
+          <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: 600 }}>Scroll to explore</span>
+          <div style={{ width: '40px', height: '1px', background: 'var(--text-secondary)', position: 'relative', overflow: 'hidden' }}>
+            <div 
+              style={{ 
+                position: 'absolute', 
+                inset: 0, 
+                background: 'var(--text-primary)', 
+                animation: 'scroll-line 2s cubic-bezier(0.65, 0, 0.35, 1) infinite' 
+              }} 
+            />
+          </div>
         </div>
       </div>
+      
+      {/* Safe embedded CSS for animations and responsive grid adjustments */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes scroll-line {
+          0% { transform: scaleX(0); transform-origin: left; }
+          49% { transform: scaleX(1); transform-origin: left; }
+          50% { transform: scaleX(1); transform-origin: right; }
+          100% { transform: scaleX(0); transform-origin: right; }
+        }
+        @media (max-width: 992px) {
+          .hero-grid {
+            grid-template-columns: 1fr !important;
+            row-gap: 3rem !important;
+          }
+          .hero-image-col {
+            height: clamp(50vh, 600px, 70vh) !important;
+            order: -1;
+            margin-bottom: 1rem;
+          }
+        }
+      `}} />
     </section>
   );
 }

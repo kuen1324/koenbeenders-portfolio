@@ -3,7 +3,6 @@ import { useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
-import { useDepthParallax } from '@/hooks/useDepthParallax';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -16,9 +15,6 @@ const stats = [
 export default function AboutSection() {
     const sectionRef = useRef<HTMLElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
-
-    // Apply depth-based parallax (surface layer)
-    useDepthParallax(contentRef, { depth: 0.5 });
 
     useGSAP(() => {
         if (!contentRef.current) return;
