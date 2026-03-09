@@ -1,0 +1,57 @@
+// Performance monitoring code (add to layout.tsx)
+
+'use client';
+
+import { useEffect } from 'react';
+
+export function PerformanceMonitor() {
+  useEffect(() => {
+    // Web Vitals monitoring
+    const reportWebVitals = async () => {
+      const { getCLS, getFID, getFCP, getLCP, getTTFB } = await import('web-vitals');
+
+      getCLS(console.log);
+      getFID(console.log);
+      getFCP(console.log);
+      getLCP(console.log);
+      getTTFB(console.log);
+    };
+
+    // Check for connection speed and adjust animations
+    const checkConnection = () => {
+      const connection = (navigator as any).connection;
+      if (connection) {
+        const effectiveType = connection.effectiveType;
+        const saveData = connection.saveData;
+
+        if (effectiveType === '4g' && !saveData) {
+          document.documentElement.style.setProperty('--animation-performance', 'normal');
+        } else {
+          document.documentElement.style.setProperty('--animation-performance', 'reduced');
+          document.documentElement.classList.add('low-bandwidth');
+        }
+      }
+    };
+
+    reportWebVitals();
+    checkConnection();
+
+    // Performance API metrics
+    if (typeof window !== 'undefined' && window.performance) {
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const perfData = window.performance.timing;
+          const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
+          console.log('Page Load Time:', pageLoadTime, 'ms');
+
+          // Log Core Web Vitals if available
+          if ((window as any).web_vitals) {
+            console.log('Web Vitals:', (window as any).web_vitals);
+          }
+        }, 0);
+      });
+    }
+  }, []);
+
+  return null;
+}

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://koenbeenders.vercel.app/sitemap.xml

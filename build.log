@@ -1,0 +1,36 @@
+
+> koen-beenders-portfolio@0.1.0 build
+> next build
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/12) ...
+   Generating static pages (3/12) 
+   Generating static pages (6/12) 
+   Generating static pages (9/12) 
+ ✓ Generating static pages (12/12) 
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ○ /                                    17.3 kB         158 kB
+├ ○ /_not-found                          0 B                0 B
+├ ○ /robots.txt                          0 B                0 B
+├ ○ /sitemap.xml                         0 B                0 B
+└ ● /work/[slug]                         1.92 kB          95 kB
+    ├ /work/voltmatch
+    ├ /work/claricity
+    ├ /work/elevation-commerce
+    └ [+2 more paths]
++ First Load JS shared by all            80.6 kB
+  ├ chunks/472-71cbde1496df20bb.js       27.5 kB
+  ├ chunks/fd9d1056-684e7354f73b5320.js  51.1 kB
+  ├ chunks/main-app-3ef38d6d030dd192.js  231 B
+  └ chunks/webpack-ffabc02eb6fc2831.js   1.79 kB
+
+
+○  (Static)  automatically rendered as static HTML (uses no initial props)
+●  (SSG)     automatically generated as static HTML + JSON (uses getStaticProps)
+
