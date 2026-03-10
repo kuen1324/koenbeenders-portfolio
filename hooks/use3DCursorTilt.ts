@@ -86,8 +86,8 @@ export function use3DCursorTilt(ref: React.RefObject<HTMLElement | HTMLDivElemen
 
     // Create quickTo functions for smooth interpolation
     // rotateX and rotateY
-    tiltQuickToRef.current = gsap.quickTo(ref.current, 'rotateX', { duration, ease: 'power2.out' });
-    const tiltYQuicKTo = gsap.quickTo(ref.current, 'rotateY', { duration, ease: 'power2.out' });
+    tiltQuickToRef.current = gsap.quickTo(ref.current, 'rotateX', { duration, ease: 'power2.out', overwrite: 'auto' });
+    const tiltYQuicKTo = gsap.quickTo(ref.current, 'rotateY', { duration, ease: 'power2.out', overwrite: 'auto' });
 
     // Override the tilt function to handle both at once
     const origTilt = tiltQuickToRef.current;
@@ -99,8 +99,8 @@ export function use3DCursorTilt(ref: React.RefObject<HTMLElement | HTMLDivElemen
     // Look for inner image element
     const innerImage = ref.current.querySelector('img, [data-tilt-target]') as HTMLElement;
     if (innerImage) {
-      const xQuickTo = gsap.quickTo(innerImage, 'x', { duration, ease: 'power2.out' });
-      const yQuickTo = gsap.quickTo(innerImage, 'y', { duration, ease: 'power2.out' });
+      const xQuickTo = gsap.quickTo(innerImage, 'x', { duration, ease: 'power2.out', overwrite: 'auto' });
+      const yQuickTo = gsap.quickTo(innerImage, 'y', { duration, ease: 'power2.out', overwrite: 'auto' });
       shiftQuickToRef.current = (shiftX: number, shiftY: number) => {
         xQuickTo(shiftX);
         yQuickTo(shiftY);

@@ -47,7 +47,7 @@ export const projects: Project[] = [
         outcome: '92% Reservation Certainty',
         liveUrl: 'https://voltmatch.vercel.app/',
         repoUrl: '',
-        coverImage: '/work/voltmatch/voltmatch-cover.jpg',
+        coverImage: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=900&q=80&auto=format&fit=crop',
         sections: [
             {
                 heading: 'Problem',
@@ -103,7 +103,7 @@ export const projects: Project[] = [
         outcome: '40% Higher Trust Conversion',
         liveUrl: 'https://claricity.ai/',
         repoUrl: '',
-        coverImage: '/work/claricity/hero.jpg',
+        coverImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=900&q=80&auto=format&fit=crop',
         sections: [
             {
                 heading: 'Problem',
@@ -152,7 +152,7 @@ export const projects: Project[] = [
         stack: ['Next.js', 'TypeScript', 'GSAP', 'Stripe'],
         summary: 'A premium e-commerce experience built for conversion and brand elevation.',
         outcome: 'Instant Page Load',
-        coverImage: '/work/elevation-commerce/hero.png',
+        coverImage: 'https://images.unsplash.com/photo-1492724441997-5dc865305da7?w=900&q=80&auto=format&fit=crop',
         sections: [],
         gallery: [
             { src: '/work/elevation-commerce/hero.png', caption: 'High-performance storefront' },
@@ -176,7 +176,7 @@ export const projects: Project[] = [
         stack: ['After Effects', 'Lottie', 'React'],
         summary: 'A motion-driven identity system that brings a brand to life across digital touchpoints.',
         outcome: 'Award-Winning Motion',
-        coverImage: '/work/kinetic-brand-studio/branding-main.png',
+        coverImage: 'https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=900&q=80&auto=format&fit=crop',
         sections: [],
         gallery: [
             { src: '/work/kinetic-brand-studio/branding-main.png', caption: 'Dynamic brand identity' },
@@ -198,7 +198,7 @@ export const projects: Project[] = [
         summary: 'A premium AI web interface demonstrating advanced interactive patterns, fluid motion, and intelligent presentation.',
         outcome: 'Premium Experience',
         liveUrl: 'https://ai-web-pearl-seven.vercel.app/',
-        coverImage: '/gallery/illuminated.png',
+        coverImage: 'https://images.unsplash.com/photo-1545235617-7a424c1a60cc?w=900&q=80&auto=format&fit=crop',
         sections: [],
         gallery: [
             { src: '/gallery/illuminated.png', caption: 'Next-generation AI interface' },
