@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Archivo, Space_Grotesk } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 import LenisProvider from '@/components/LenisProvider';
 import CustomCursor from '@/components/CustomCursor';
@@ -70,6 +71,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preload" href="/portrait.jpg" as="image" fetchPriority="high" />
       </head>
+      <Script src="https://www.googletagmanager.com/gtag/js?id=G-6VMPRS3TTE" strategy="afterInteractive" />
+      <Script id="gtag-init" strategy="afterInteractive">{`
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-6VMPRS3TTE');
+      `}</Script>
       <body className={`${bodyFont.variable} ${displayFont.variable}`} suppressHydrationWarning>
         <LenisProvider>
           <ScrollProgress />
