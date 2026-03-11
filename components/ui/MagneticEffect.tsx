@@ -2,6 +2,10 @@
 import React, { useRef, useEffect } from 'react';
 import gsap from 'gsap';
 
+const isSafari = typeof window !== 'undefined'
+    ? /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+    : false;
+
 interface MagneticEffectProps {
     children: React.ReactElement;
     strength?: number;
@@ -9,6 +13,10 @@ interface MagneticEffectProps {
 
 export default function MagneticEffect({ children, strength = 0.35 }: MagneticEffectProps) {
     const magnetic = useRef<HTMLDivElement>(null);
+
+    // Safari: skip magnetic effect — getBoundingClientRect + GSAP on every mousemove
+    // adds pointer compositor latency. Render children directly with default hover.
+    if (isSafari) return children;
 
     useEffect(() => {
         const m = magnetic.current;

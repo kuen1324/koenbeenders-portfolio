@@ -3,9 +3,16 @@ import { useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 
+const isSafari = typeof window !== 'undefined'
+    ? /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+    : false;
+
 export default function CustomCursor() {
     const dotRef = useRef<HTMLDivElement>(null);
     const ringRef = useRef<HTMLDivElement>(null);
+
+    // Safari: no custom cursor — GSAP + DOM cursor elements add pointer compositor latency
+    if (isSafari) return null;
 
     useGSAP(() => {
         const dot = dotRef.current;

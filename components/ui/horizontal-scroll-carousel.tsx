@@ -147,6 +147,8 @@ export default function Gallery({ sectionRef }: GalleryProps) {
     // Premium Bounded 3D Mouse Tracking — rAF throttled to prevent layout thrash
     const handleMouseMove = (index: number, e: React.MouseEvent<HTMLDivElement>) => {
         if (window.matchMedia("(max-width: 639px)").matches) return;
+        // Safari: skip 3D tilt tracking — adds pointer latency on every move event
+        if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) return;
         if (mouseMoveRaf.current !== null) return; // Already a frame pending
 
         const clientX = e.clientX;

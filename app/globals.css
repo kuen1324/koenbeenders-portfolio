@@ -2953,3 +2953,24 @@ html.safari .gallery-lightbox {
   -webkit-backdrop-filter: none !important;
   background: rgba(5, 5, 8, 0.96) !important;
 }
+
+/* Safari hover responsiveness — restore default cursor and shorten transitions */
+html.safari,
+html.safari * {
+  cursor: auto !important;
+}
+html.safari a,
+html.safari button,
+html.safari [role="button"] {
+  cursor: pointer !important;
+}
+
+/* Shorten hover transition durations in Safari for immediate feel */
+html.safari .gallery-item__interaction,
+html.safari .gallery-item__image,
+html.safari .gallery-item__overlay,
+html.safari .btn,
+html.safari .floating-nav__item,
+html.safari .floating-nav__pill {
+  transition-duration: 0.15s !important;
+}

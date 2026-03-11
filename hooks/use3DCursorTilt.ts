@@ -3,6 +3,10 @@
 import { useEffect, useRef, useCallback } from 'react';
 import gsap from 'gsap';
 
+const isSafari = typeof window !== 'undefined'
+  ? /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+  : false;
+
 interface TiltOptions {
   maxRotateX?: number;
   maxRotateY?: number;
@@ -82,6 +86,8 @@ export function use3DCursorTilt(ref: React.RefObject<HTMLElement | HTMLDivElemen
   }, [ref]);
 
   useEffect(() => {
+    // Safari: skip tilt — GSAP on every mousemove adds pointer latency
+    if (isSafari) return;
     if (!ref.current) return;
 
     // Create quickTo functions for smooth interpolation
