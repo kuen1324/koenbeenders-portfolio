@@ -1991,6 +1991,10 @@ footer {
   mix-blend-mode: difference;
 }
 
+@media (max-width: 767px) {
+  .cursor { display: none !important; }
+}
+
 /* ============================================
    17. BACK-TO-TOP BUTTON
    ============================================ */
