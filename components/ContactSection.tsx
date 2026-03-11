@@ -54,26 +54,11 @@ export default function ContactSection() {
 
                         <div ref={ctaContainerRef} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-6)' }}>
                             <MagneticEffect strength={0.3}>
-                                <a href={`mailto:${brand.email}`} className="btn btn--primary" style={{ padding: 'var(--space-5) var(--space-10)', fontSize: 'var(--fs-lg)', transition: 'all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1)' }}>
+                                <a href={`https://mail.google.com/mail/?view=cm&to=${brand.email}`} target="_blank" rel="noopener noreferrer" className="btn btn--primary" style={{ padding: 'var(--space-5) var(--space-10)', fontSize: 'var(--fs-lg)', transition: 'all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1)' }}>
                                     Get in Touch
                                 </a>
                             </MagneticEffect>
 
-                            {/* Email as text link */}
-                            <a
-                                href={`mailto:${brand.email}`}
-                                style={{
-                                    fontSize: 'var(--fs-sm)',
-                                    color: 'var(--text-dark-secondary)',
-                                    textDecoration: 'none',
-                                    letterSpacing: '0.04em',
-                                    transition: 'color 0.3s ease',
-                                }}
-                                onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--text-dark-primary)'; }}
-                                onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-dark-secondary)'; }}
-                            >
-                                {brand.email}
-                            </a>
                         </div>
                     </div>
                 </div>

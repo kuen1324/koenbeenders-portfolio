@@ -66,8 +66,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className={`${bodyFont.variable} ${displayFont.variable}`}>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="preload" href="/portrait.jpg" as="image" fetchPriority="high" />
+      </head>
+      <body className={`${bodyFont.variable} ${displayFont.variable}`} suppressHydrationWarning>
         <LenisProvider>
           <ScrollProgress />
           <CustomCursor />

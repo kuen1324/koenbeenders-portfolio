@@ -12,7 +12,7 @@ export default function Error({
     const magRef = useMagnetic(0.3) as React.RefObject<HTMLButtonElement>;
 
     useEffect(() => {
-        console.error(error);
+        // Error logged by Next.js error boundary
     }, [error]);
 
     return (

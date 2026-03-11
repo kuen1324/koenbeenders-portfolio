@@ -12,6 +12,10 @@ export default function WorkSection() {
                 name: p.title,
                 designation: `${p.role} · ${p.year}`,
                 src: p.coverImage ?? '',
+                coverIcon: p.coverIcon,
+                coverIconWidth: p.coverIconWidth,
+                coverBg: p.coverBg,
+                liveUrl: p.liveUrl,
             })),
         []
     );
@@ -53,9 +57,9 @@ export default function WorkSection() {
                             arrowHoverBackground: 'var(--text-secondary)',
                         }}
                         fontSizes={{
-                            name: 'clamp(1.25rem, 2vw, 1.5rem)',
-                            designation: '0.8125rem',
-                            quote: 'clamp(0.875rem, 1.1vw, 1rem)',
+                            name: 'clamp(1.75rem, 2.8vw, 2.75rem)',
+                            designation: '0.9375rem',
+                            quote: 'clamp(1.05rem, 1.35vw, 1.3rem)',
                         }}
                     />
                 </div>

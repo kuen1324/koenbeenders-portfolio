@@ -29,6 +29,10 @@ interface Testimonial {
   name: string;
   designation: string;
   src: string;
+  coverIcon?: string;
+  coverIconWidth?: number | string;
+  coverBg?: string;
+  liveUrl?: string;
 }
 interface Colors {
   name?: string;
@@ -197,7 +201,7 @@ export const CircularTestimonials = ({
             const s = getImageStyle(index);
             return (
               <div
-                key={testimonial.src}
+                key={testimonial.name}
                 data-index={index}
                 style={{
                   position: "absolute",
@@ -206,6 +210,14 @@ export const CircularTestimonials = ({
                   borderRadius: "1.5rem",
                   overflow: "hidden",
                   boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
+                  backgroundColor: testimonial.coverBg ?? "#0f0f10",
+                  // Number coverIconWidth → CSS background centered at fixed px size
+                  backgroundImage: (testimonial.coverIcon && typeof testimonial.coverIconWidth === "number")
+                    ? `url(${testimonial.coverIcon})` : undefined,
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "center",
+                  backgroundSize: (testimonial.coverIcon && typeof testimonial.coverIconWidth === "number")
+                    ? `${testimonial.coverIconWidth ?? 72}px auto` : undefined,
                   zIndex: s.zIndex,
                   opacity: s.opacity,
                   transform: s.transform,
@@ -213,15 +225,38 @@ export const CircularTestimonials = ({
                   pointerEvents: s.pointerEvents as React.CSSProperties["pointerEvents"],
                 }}
               >
-                <div style={{ position: "relative", width: "100%", height: "100%" }}>
-                  <Image
-                    src={testimonial.src}
-                    alt={testimonial.name}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    style={{ objectFit: "cover" }}
+                {/* String coverIconWidth → img fills container edge to edge */}
+                {testimonial.coverIcon && typeof testimonial.coverIconWidth === "string" && (
+                  <img
+                    src={testimonial.coverIcon}
+                    alt=""
+                    aria-hidden="true"
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
                   />
-                </div>
+                )}
+                {/* Photo cards */}
+                {!testimonial.coverIcon && !testimonial.coverBg && testimonial.src && (
+                  <div style={{ position: "relative", width: "100%", height: "100%" }}>
+                    <Image
+                      src={testimonial.src}
+                      alt={testimonial.name}
+                      fill
+                      loading="lazy"
+                      quality={80}
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      style={{ objectFit: "cover" }}
+                    />
+                  </div>
+                )}
               </div>
             );
           })}
@@ -277,6 +312,27 @@ export const CircularTestimonials = ({
                   </motion.span>
                 ))}
               </motion.p>
+              {activeTestimonial.liveUrl && (
+                <a
+                  href={activeTestimonial.liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: "inline-block",
+                    marginTop: "1.25rem",
+                    fontSize: fontSizeDesignation,
+                    color: colorDesignation,
+                    textDecoration: "none",
+                    borderBottom: `1px solid currentColor`,
+                    opacity: 0.7,
+                    transition: "opacity 0.2s",
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = "1")}
+                  onMouseLeave={e => (e.currentTarget.style.opacity = "0.7")}
+                >
+                  Visit website ↗
+                </a>
+              )}
             </motion.div>
           </AnimatePresence>
           <div className="arrow-buttons">

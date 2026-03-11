@@ -16,10 +16,13 @@ export default function LenisProvider({ children }: { children: React.ReactNode 
         });
 
         lenis.on('scroll', ScrollTrigger.update);
-        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        // Store callback reference so it can be removed on cleanup
+        const rafCallback = (time: number) => lenis.raf(time * 1000);
+        gsap.ticker.add(rafCallback);
         gsap.ticker.lagSmoothing(0);
 
         return () => {
+            gsap.ticker.remove(rafCallback);
             lenis.destroy();
             ScrollTrigger.getAll().forEach(t => t.kill());
         };

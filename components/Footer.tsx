@@ -1,21 +1,27 @@
+'use client';
+import { useEffect, useState } from 'react';
 import { brand } from '@/lib/brand';
 import MagneticEffect from './ui/MagneticEffect';
 
 export default function Footer() {
     const socialEntries = Object.entries(brand.socials) as [string, string][];
-    const currentYear = new Date().getFullYear();
+    const [currentYear, setCurrentYear] = useState('2025');
+
+    useEffect(() => {
+        setCurrentYear(new Date().getFullYear().toString());
+    }, []);
 
     return (
-        <footer className="footer" role="contentinfo" aria-label="Footer" style={{ borderTopLeftRadius: '4rem', borderTopRightRadius: '4rem', overflow: 'hidden', background: 'var(--surface-alt)' }}>
+        <footer className="footer" role="contentinfo" aria-label="Footer" style={{ overflow: 'hidden' }}>
             <div className="container" style={{ paddingTop: 'var(--space-16)' }}>
                 <div className="footer__content">
                     {/* Left column: branding & tagline */}
                     <div className="footer__col footer__col--brand">
                         <h3 className="footer__brand" style={{ fontFamily: 'var(--font-display)', fontWeight: 600 }}>{brand.name}</h3>
-                        <p className="footer__tagline" style={{ color: 'var(--text-secondary)' }}>Strategic design director building digital products that matter.</p>
+                        <p className="footer__tagline" style={{ color: 'var(--text-secondary)' }}>Design & development from Amsterdam.</p>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: 'var(--space-4)', fontSize: 'var(--fs-xs)', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-tertiary)', fontWeight: 600 }}>
                             <span className="pulse-dot-anim" style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e' }} />
-                            System Operational
+                            Available for work
                         </div>
                     </div>
 
@@ -66,10 +72,7 @@ export default function Footer() {
                     <p className="footer__copy">
                         © {currentYear} {brand.name}. All rights reserved.
                     </p>
-                    <div className="footer__legal">
-                        <a href="#" className="footer__legal-link">Privacy</a>
-                        <a href="#" className="footer__legal-link">Terms</a>
-                    </div>
+                    <span className="footer__copy">{brand.location}</span>
                 </div>
             </div>
         </footer>

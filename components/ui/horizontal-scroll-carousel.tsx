@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import Image from "next/image";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
@@ -19,14 +20,16 @@ interface GalleryProps {
 }
 
 const galleryImages: GalleryImage[] = [
-    { id: 1, title: "Crimson Flow", url: "/gallery/sunset.png", colors: ["rgba(140, 40, 30, 0.15)", "rgba(80, 20, 15, 0.05)"] },
-    { id: 2, title: "Quiet Room", url: "/gallery/room.png", colors: ["rgba(90, 120, 100, 0.12)", "rgba(45, 60, 50, 0.04)"] },
-    { id: 3, title: "Inferno", url: "/gallery/fire.png", colors: ["rgba(180, 70, 10, 0.15)", "rgba(90, 35, 5, 0.05)"] },
-    { id: 4, title: "Night Flight", url: "/gallery/owl.png", colors: ["rgba(20, 30, 80, 0.15)", "rgba(10, 15, 40, 0.05)"] },
-    { id: 5, title: "Shattered Visage", url: "/gallery/cracked-face.png", colors: ["rgba(60, 35, 25, 0.12)", "rgba(30, 18, 12, 0.04)"] },
-    { id: 6, title: "Portrait Study", url: "/gallery/portrait.png", colors: ["rgba(120, 80, 70, 0.15)", "rgba(60, 40, 35, 0.05)"] },
-    { id: 7, title: "Golden Light", url: "/gallery/illuminated.png", colors: ["rgba(160, 120, 60, 0.15)", "rgba(80, 60, 30, 0.05)"] },
-    { id: 8, title: "Wild Essence", url: "/gallery/wilderness.png", colors: ["rgba(100, 90, 70, 0.15)", "rgba(50, 45, 35, 0.05)"] },
+    { id: 1, title: "The Witness", url: "/gallery/g10.webp", colors: ["rgba(160, 60, 20, 0.15)", "rgba(80, 30, 10, 0.05)"] },
+    { id: 2, title: "Still Life with Heron", url: "/gallery/g2.webp", colors: ["rgba(130, 130, 100, 0.12)", "rgba(65, 65, 50, 0.04)"] },
+    { id: 3, title: "Inferno", url: "/gallery/g5.webp", colors: ["rgba(200, 100, 20, 0.18)", "rgba(100, 50, 10, 0.06)"] },
+    { id: 4, title: "Quiet Surrender", url: "/gallery/g6.webp", colors: ["rgba(180, 130, 140, 0.15)", "rgba(90, 65, 70, 0.05)"] },
+    { id: 5, title: "Trace", url: "/gallery/g9.webp", colors: ["rgba(40, 35, 30, 0.12)", "rgba(20, 18, 15, 0.04)"] },
+    { id: 6, title: "The Ritual", url: "/gallery/g1.webp", colors: ["rgba(140, 40, 30, 0.15)", "rgba(70, 20, 15, 0.05)"] },
+    { id: 7, title: "Crimson Horizon", url: "/gallery/g7.webp", colors: ["rgba(180, 40, 20, 0.15)", "rgba(90, 20, 10, 0.05)"] },
+    { id: 8, title: "Fracture", url: "/gallery/g3.webp", colors: ["rgba(60, 35, 25, 0.15)", "rgba(30, 18, 12, 0.05)"] },
+    { id: 9, title: "Night Watch", url: "/gallery/g8.webp", colors: ["rgba(30, 80, 30, 0.12)", "rgba(15, 40, 15, 0.04)"] },
+    { id: 10, title: "The Passage", url: "/gallery/g4.webp", colors: ["rgba(40, 80, 70, 0.15)", "rgba(20, 40, 35, 0.05)"] },
 ];
 
 const DEFAULT_COLORS: [string, string] = ["rgba(100, 100, 110, 0.05)", "rgba(50, 50, 55, 0.02)"];
@@ -49,6 +52,23 @@ export default function Gallery({ sectionRef }: GalleryProps) {
         const root = document.documentElement;
         root.style.setProperty("--mood-1", DEFAULT_COLORS[0]);
         root.style.setProperty("--mood-2", DEFAULT_COLORS[1]);
+    }, []);
+
+    // Pause float animations when gallery is off-screen
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                const state = entry.isIntersecting ? 'running' : 'paused';
+                container.querySelectorAll<HTMLElement>('.float-v, .float-h, .float-b, .float-r').forEach((el) => {
+                    el.style.animationPlayState = state;
+                });
+            },
+            { threshold: 0.05 }
+        );
+        observer.observe(container);
+        return () => observer.disconnect();
     }, []);
 
     // Scroll reveal
@@ -249,11 +269,14 @@ export default function Gallery({ sectionRef }: GalleryProps) {
                                 onClick={() => handleSelect(image)}
                             >
                                 <div className="gallery-item__media">
-                                    <img
+                                    <Image
                                         src={image.url}
                                         alt={image.title}
                                         className="gallery-item__image"
+                                        fill
                                         loading="lazy"
+                                        quality={80}
+                                        sizes="(max-width: 639px) 100vw, (max-width: 1024px) 50vw, 400px"
                                     />
                                 </div>
                                 <div className="gallery-item__overlay">

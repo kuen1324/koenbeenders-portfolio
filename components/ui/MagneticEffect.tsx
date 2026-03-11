@@ -14,9 +14,9 @@ export default function MagneticEffect({ children, strength = 0.35 }: MagneticEf
         const m = magnetic.current;
         if (!m) return;
 
-        const xTo = gsap.quickTo(m, "x", { duration: 0.75, ease: "elastic.out(0.8, 0.25)" });
-        const yTo = gsap.quickTo(m, "y", { duration: 0.75, ease: "elastic.out(0.8, 0.25)" });
-        const scaleTo = gsap.quickTo(m, "scale", { duration: 0.4, ease: "elastic.out(1.2, 0.4)" });
+        const xTo = gsap.quickTo(m, "x", { duration: 0.75, ease: "elastic.out(0.8, 0.25)", overwrite: "auto" });
+        const yTo = gsap.quickTo(m, "y", { duration: 0.75, ease: "elastic.out(0.8, 0.25)", overwrite: "auto" });
+        const scaleTo = gsap.quickTo(m, "scale", { duration: 0.4, ease: "elastic.out(1.2, 0.4)", overwrite: "auto" });
 
         const handleMouseMove = (e: MouseEvent) => {
             const { clientX, clientY } = e;

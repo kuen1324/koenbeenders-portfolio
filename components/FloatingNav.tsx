@@ -83,9 +83,9 @@ export default function FloatingNav() {
                 className="floating-nav__pill" 
                 ref={pillRef}
                 style={{
-                    background: scrolled ? 'rgba(250, 248, 244, 0.6)' : 'transparent',
-                    backdropFilter: scrolled ? 'blur(16px)' : 'none',
-                    border: scrolled ? '1px solid rgba(255, 255, 255, 0.45)' : '1px solid transparent',
+                    background: scrolled ? 'rgba(250, 248, 244, 0.6)' : 'rgba(255, 255, 255, 0.06)',
+                    backdropFilter: scrolled ? 'blur(16px)' : 'blur(8px)',
+                    border: scrolled ? '1px solid rgba(255, 255, 255, 0.45)' : '1px solid rgba(255, 255, 255, 0.12)',
                     boxShadow: scrolled ? '0 10px 40px -10px rgba(0, 0, 0, 0.12)' : 'none',
                     padding: '8px 12px',
                     display: 'flex',
@@ -95,7 +95,23 @@ export default function FloatingNav() {
                 }}
             >
                 {/* Logo / Name */}
-                <Link href="#hero" className="font-display font-bold text-sm tracking-tight hover:opacity-70 transition-opacity" style={{ color: 'var(--text-primary)', marginLeft: '8px', zIndex: 10 }}>
+                <Link
+                    href="#hero"
+                    style={{
+                        color: scrolled ? 'var(--text-primary)' : 'rgba(255, 255, 255, 0.9)',
+                        marginLeft: '8px',
+                        zIndex: 10,
+                        fontFamily: 'var(--font-display)',
+                        fontWeight: 700,
+                        fontSize: '0.875rem',
+                        letterSpacing: '-0.02em',
+                        textDecoration: 'none',
+                        opacity: 1,
+                        transition: 'color 0.4s ease, opacity 0.2s ease'
+                    }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = '0.6'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = '1'; }}
+                >
                     Koen Beenders
                 </Link>
 
@@ -118,7 +134,13 @@ export default function FloatingNav() {
                                 onClick={() => handleClick(item.id)}
                                 aria-label={`Navigate to ${item.label}`}
                                 aria-current={active === item.id ? "page" : undefined}
-                                style={{ display: 'block' }} // Override mobile hiding rule
+                                style={{
+                                    display: 'block',
+                                    color: scrolled
+                                        ? (active === item.id ? 'rgba(0, 0, 0, 0.85)' : 'rgba(0, 0, 0, 0.4)')
+                                        : (active === item.id ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.6)'),
+                                    transition: 'color 0.4s ease',
+                                }}
                             >
                                 <span className="floating-nav__label" style={{ display: 'block' }}>{item.label}</span>
                             </button>

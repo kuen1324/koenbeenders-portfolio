@@ -34,55 +34,40 @@ export default function CustomCursor() {
         window.addEventListener('mousemove', onMove);
 
         const onEnter = (e: MouseEvent) => {
-            const target = e.currentTarget as HTMLElement;
+            const target = (e.target as HTMLElement).closest('a, button, .work__card, .gallery-item') as HTMLElement | null;
+            if (!target) return;
             const isWorkCard = target.classList.contains('work__card');
-
             gsap.to(ring, {
                 scale: isWorkCard ? 3.5 : 2.4,
-                opacity: isWorkCard ? 0.4 : 0.6,
-                borderColor: isWorkCard ? 'var(--white)' : 'rgba(127, 168, 209, 0.6)',
+                opacity: isWorkCard ? 0.5 : 0.7,
+                borderColor: 'white',
                 duration: 0.4,
                 ease: 'power3.out',
             });
-            gsap.to(dot, {
-                scale: isWorkCard ? 0 : 1,
-                duration: 0.3,
-            });
+            gsap.to(dot, { scale: isWorkCard ? 0 : 1, duration: 0.3 });
         };
 
-        const onLeave = () => {
+        const onLeave = (e: MouseEvent) => {
+            const target = (e.target as HTMLElement).closest('a, button, .work__card, .gallery-item');
+            if (!target) return;
             gsap.to(ring, {
                 scale: 1,
-                opacity: 1,
-                borderColor: 'rgba(127, 168, 209, 0.6)',
+                opacity: 0.85,
+                borderColor: 'white',
                 duration: 0.4,
                 ease: 'power3.out',
             });
-            gsap.to(dot, {
-                scale: 1,
-                duration: 0.3,
-            });
+            gsap.to(dot, { scale: 1, duration: 0.3 });
         };
 
-        const addListeners = () => {
-            const targets = document.querySelectorAll('a, button, .work__card, .gallery-item');
-            targets.forEach((el) => {
-                el.addEventListener('mouseenter', onEnter as EventListener);
-                el.addEventListener('mouseleave', onLeave);
-            });
-        };
-        addListeners();
-
-        // Refresh listeners for dynamic content
-        const timer = setInterval(addListeners, 2000);
+        // Event delegation — single pair of listeners, no polling
+        document.addEventListener('mouseover', onEnter as EventListener, { passive: true });
+        document.addEventListener('mouseout', onLeave as EventListener, { passive: true });
 
         return () => {
-            clearInterval(timer);
             window.removeEventListener('mousemove', onMove);
-            document.querySelectorAll('a, button, .work__card, .gallery-item').forEach((el) => {
-                el.removeEventListener('mouseenter', onEnter as EventListener);
-                el.removeEventListener('mouseleave', onLeave);
-            });
+            document.removeEventListener('mouseover', onEnter as EventListener);
+            document.removeEventListener('mouseout', onLeave as EventListener);
         };
     }, []);
 

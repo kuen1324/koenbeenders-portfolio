@@ -117,7 +117,7 @@ export default function HeroSection() {
           width: '100%',
           maxWidth: '96rem',
           margin: '0 auto',
-          padding: 'clamp(5rem, 10vh, 7rem) clamp(2rem, 5vw, 5rem) clamp(4rem, 8vh, 6rem)',
+          padding: 'clamp(5rem, 10vh, 7rem) clamp(3rem, 7vw, 8rem) clamp(4rem, 8vh, 6rem)',
           display: 'grid',
           gridTemplateColumns: '7fr 5fr',
           gap: 'clamp(2rem, 4vw, 3.5rem)',
@@ -133,7 +133,7 @@ export default function HeroSection() {
             initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.9, ease: [0.25, 1, 0.5, 1], delay: 0.2 }}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.875rem', marginBottom: 'clamp(2rem, 5vh, 3rem)' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.875rem', marginBottom: 'clamp(0.875rem, 2vh, 1.25rem)' }}
           >
             <div style={{ width: '1.75rem', height: '1px', background: 'rgba(255,255,255,0.2)' }} />
             <span style={{
@@ -143,18 +143,18 @@ export default function HeroSection() {
               letterSpacing: '0.32em',
               color: 'rgba(255,255,255,0.52)',
             }}>
-              Design Director
+              Koen Beenders
             </span>
           </motion.div>
 
           {/* Headline */}
           <h1 style={{
             fontSize: 'clamp(3.5rem, 7.5vw, 7.5rem)',
-            lineHeight: 0.9,
-            fontWeight: 600,
+            lineHeight: 1.05,
+            fontWeight: 700,
             letterSpacing: '-0.035em',
             color: 'white',
-            margin: '0 0 clamp(2rem, 4vh, 2.75rem) 0',
+            margin: '0 0 clamp(1.1rem, 2vh, 1.6rem) 0',
           }}>
             <motion.span
               initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 44 }}
@@ -162,7 +162,7 @@ export default function HeroSection() {
               transition={shouldReduceMotion ? { duration: 0 } : { duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
               style={{ display: 'block' }}
             >
-              Intersection
+              Van idee
             </motion.span>
             <motion.span
               initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 44 }}
@@ -170,26 +170,13 @@ export default function HeroSection() {
               transition={shouldReduceMotion ? { duration: 0 } : { duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.42 }}
               style={{
                 display: 'block',
-                color: 'rgba(255,255,255,0.42)',
-                paddingLeft: '7%',
-                fontWeight: 400,
-              }}
-            >
-              of design
-            </motion.span>
-            <motion.span
-              initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 44 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={shouldReduceMotion ? { duration: 0 } : { duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.54 }}
-              style={{
-                display: 'block',
                 fontStyle: 'italic',
-                fontWeight: 300,
+                fontWeight: 400,
                 color: 'rgba(255,255,255,0.88)',
                 letterSpacing: '-0.02em',
               }}
             >
-              & engineering.
+              naar product.
             </motion.span>
           </h1>
 
@@ -199,16 +186,16 @@ export default function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={shouldReduceMotion ? { duration: 0 } : { duration: 1, ease: [0.25, 1, 0.5, 1], delay: 0.65 }}
             style={{
-              fontSize: 'clamp(0.875rem, 1vw, 1rem)',
-              lineHeight: 1.8,
-              color: 'rgba(255,255,255,0.58)',
-              maxWidth: '26rem',
+              fontSize: 'clamp(1rem, 1.1vw, 1.125rem)',
+              lineHeight: 1.6,
+              color: 'rgba(255,255,255,0.65)',
+              maxWidth: '30rem',
               fontWeight: 300,
-              margin: '0 0 clamp(2.5rem, 5vh, 3.5rem) 0',
+              margin: '0 0 clamp(1.5rem, 3vh, 2.25rem) 0',
               letterSpacing: '0.015em',
             }}
           >
-            I design and build digital products where every detail earns its place — from interface to infrastructure.
+            Websites, digitale producten en AI-tools ontworpen en gebouwd van eerste concept tot werkend product.
           </motion.p>
 
           {/* CTAs */}
@@ -216,7 +203,7 @@ export default function HeroSection() {
             initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 }}
             animate={{ opacity: 1, y: 0 }}
             transition={shouldReduceMotion ? { duration: 0 } : { duration: 1, ease: [0.25, 1, 0.5, 1], delay: 0.75 }}
-            style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.875rem' }}
+            style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '1.5rem' }}
           >
             <MagneticEffect strength={0.2}>
               <Link
@@ -247,7 +234,7 @@ export default function HeroSection() {
                   el.style.boxShadow = '0 0 60px -18px rgba(255,255,255,0.5)';
                 }}
               >
-                Explore Work
+                Bekijk werk
               </Link>
             </MagneticEffect>
             <MagneticEffect strength={0.15}>
@@ -281,7 +268,7 @@ export default function HeroSection() {
                   el.style.color = 'rgba(255,255,255,0.5)';
                 }}
               >
-                About Me
+                Over mij
               </Link>
             </MagneticEffect>
           </motion.div>
@@ -289,6 +276,7 @@ export default function HeroSection() {
 
         {/* Right: Portrait — 4-layer stack for isolation of FM + GSAP */}
         <motion.div
+          className="hero-portrait-col"
           style={{
             y: y2,
             position: 'relative',
@@ -353,11 +341,12 @@ export default function HeroSection() {
                     alt="Koen Beenders"
                     fill
                     priority
+                    quality={100}
                     sizes="(max-width: 1024px) 100vw, 480px"
                     style={{
                       objectFit: 'cover',
-                      objectPosition: 'center 28%',
-                      filter: 'brightness(0.9) contrast(1.1) saturate(0.88)',
+                      objectPosition: 'center 7%',
+                      filter: 'brightness(1.05) contrast(1.05)',
                     }}
                   />
                 </div>
@@ -366,7 +355,7 @@ export default function HeroSection() {
                 <div aria-hidden="true" style={{
                   position: 'absolute',
                   inset: 0,
-                  boxShadow: 'inset 0 0 140px rgba(0,0,0,0.65)',
+                  boxShadow: 'inset 0 0 80px rgba(0,0,0,0.25)',
                   zIndex: 10,
                   pointerEvents: 'none',
                 }} />
@@ -433,39 +422,6 @@ export default function HeroSection() {
           whiteSpace: 'nowrap',
         }}
       >
-        {/* Identity / location line */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem' }}>
-          <span style={{
-            fontSize: '0.6rem',
-            letterSpacing: '0.25em',
-            color: 'rgba(255,255,255,0.28)',
-            textTransform: 'uppercase',
-            fontWeight: 500,
-          }}>
-            Koen Beenders
-          </span>
-          <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(255,255,255,0.18)' }} />
-          <span style={{
-            fontSize: '0.6rem',
-            letterSpacing: '0.25em',
-            color: 'rgba(255,255,255,0.28)',
-            textTransform: 'uppercase',
-            fontWeight: 500,
-          }}>
-            Amsterdam
-          </span>
-          <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(255,255,255,0.18)' }} />
-          <span style={{
-            fontSize: '0.6rem',
-            letterSpacing: '0.25em',
-            color: 'rgba(255,255,255,0.28)',
-            textTransform: 'uppercase',
-            fontWeight: 500,
-          }}>
-            Available
-          </span>
-        </div>
-
         {/* Animated scroll line */}
         {!shouldReduceMotion ? (
           <motion.div
@@ -486,6 +442,7 @@ export default function HeroSection() {
           }} />
         )}
       </motion.div>
+
 
     </section>
   );

@@ -477,6 +477,10 @@ a:hover {
 .float-b { animation: float-breathe 8s ease-in-out infinite alternate; }
 .float-r { animation: float-rotate 14s ease-in-out infinite alternate; }
 
+@media (prefers-reduced-motion: reduce) {
+  .float-v, .float-h, .float-b, .float-r { animation: none; }
+}
+
 /* Form Basics */
 input,
 textarea {
@@ -731,6 +735,37 @@ iframe {
     display: block;
     padding-block: clamp(2rem, 6vh, 4rem);
     padding-inline: 1.5rem;
+  }
+}
+
+/* ── Hero content grid responsive breakpoints ── */
+@media (max-width: 1024px) {
+  .hero-content-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: clamp(1.5rem, 3vw, 2.5rem) !important;
+    align-items: start !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .hero-content-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+    padding: clamp(6rem, 12vh, 8rem) clamp(1.25rem, 5vw, 2rem) clamp(3rem, 6vh, 4.5rem) !important;
+  }
+
+  .hero-portrait-col {
+    justify-content: center !important;
+  }
+
+  .hero-portrait-col > div {
+    max-width: 320px !important;
+  }
+
+  /* Scale headline to fit single column comfortably */
+  .hero-content-grid h1 {
+    font-size: clamp(2.75rem, 10vw, 3.5rem) !important;
+    line-height: 1.05 !important;
   }
 }
 
@@ -1031,7 +1066,7 @@ iframe {
   background: var(--bg);
   overflow: visible;
   border-top: none !important;
-  padding-top: clamp(3rem, 6vh, 5rem) !important;
+  padding-top: clamp(1.5rem, 3vh, 2.5rem) !important;
   padding-bottom: clamp(5rem, 10vh, 8rem) !important;
 }
 
@@ -1049,12 +1084,12 @@ iframe {
   margin-bottom: clamp(2.5rem, 4vw, 3.5rem);
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .work-header {
-    flex-direction: row;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: clamp(2rem, 5vw, 5rem);
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: clamp(3.5rem, 5.5vw, 6.5rem);
+    align-items: end;
   }
 }
 
@@ -1075,7 +1110,6 @@ iframe {
   color: var(--text-secondary);
   max-width: 40ch;
   margin: 0;
-  flex-shrink: 0;
 }
 
 @media (max-width: 1023px) {
@@ -1104,16 +1138,16 @@ iframe {
      inflates to image height and spacing becomes arbitrary. */
 @media (min-width: 768px) {
   .work-showcase .testimonial-grid {
-    grid-template-columns: 1.2fr 1fr !important;
-    gap: clamp(3rem, 5vw, 5rem) !important;
-    align-items: start !important;
+    grid-template-columns: 1.1fr 1fr !important;
+    gap: clamp(3.5rem, 5.5vw, 6.5rem) !important;
+    align-items: center !important;
   }
 }
 
-/* Image container: proportional height relative to its column width.
-   ~28vw at desktop gives a strong rectangle without excessive height. */
+/* Image container: proportional height relative to its column width. */
 .work-showcase .image-container {
-  height: clamp(22rem, 32vw, 36rem) !important;
+  height: clamp(18rem, 27vw, 36rem) !important;
+  margin-top: 2rem !important;
 }
 
 /* Content column: elements flow top-to-bottom by natural hierarchy.
@@ -1124,18 +1158,18 @@ iframe {
 
 /* Name → designation: close grouping (they are one unit of metadata) */
 .work-showcase .name {
-  margin-bottom: 0.25rem !important;
+  margin-bottom: 0.625rem !important;
 }
 
 /* Designation → quote: clear but not excessive separation */
 .work-showcase .designation {
-  margin-bottom: 1rem !important;
+  margin-bottom: 2rem !important;
 }
 
 /* Arrows: sit directly below the quote with fixed breathing room */
 .work-showcase .arrow-buttons {
   margin-top: 0 !important;
-  padding-top: 1.5rem !important;
+  padding-top: 2rem !important;
 }
 
 /* ============================================
@@ -1436,6 +1470,12 @@ nav {
 nav.nav--scrolled {
   border-bottom-color: var(--border-subtle);
   box-shadow: 0 1px 12px rgba(0, 0, 0, 0.04);
+}
+
+@media (max-width: 767px) {
+  nav {
+    display: none !important;
+  }
 }
 
 @media (min-width: 768px) {
@@ -2039,7 +2079,6 @@ footer {
 .gallery-item:nth-child(3) {
   grid-column: 1 / span 4;
   aspect-ratio: 1/1;
-  transform: translateY(24px);
 }
 
 /* Item 4 — landscape (cols 5-9) */
@@ -2052,14 +2091,12 @@ footer {
 .gallery-item:nth-child(5) {
   grid-column: 10 / span 3;
   aspect-ratio: 2/3;
-  transform: translateY(-16px);
 }
 
 /* Item 6 — landscape (cols 1-5) */
 .gallery-item:nth-child(6) {
   grid-column: 1 / span 5;
   aspect-ratio: 4/3;
-  transform: translateY(16px);
 }
 
 /* Item 7 — large square (cols 6-10) */
@@ -2072,7 +2109,18 @@ footer {
 .gallery-item:nth-child(8) {
   grid-column: 11 / span 2;
   aspect-ratio: 2/3;
-  transform: translateY(-24px);
+}
+
+/* Item 9 — wide landscape (cols 1-8) */
+.gallery-item:nth-child(9) {
+  grid-column: 1 / span 8;
+  aspect-ratio: 16/9;
+}
+
+/* Item 10 — portrait (cols 9-12) */
+.gallery-item:nth-child(10) {
+  grid-column: 9 / span 4;
+  aspect-ratio: 3/4;
 }
 
 /* 2. Motion Layer */
@@ -2081,6 +2129,8 @@ footer {
   inset: 0;
   width: 100%;
   height: 100%;
+}
+.gallery-item:hover .gallery-item__motion {
   will-change: transform;
 }
 
@@ -2130,6 +2180,8 @@ footer {
   height: 100%;
   object-fit: cover;
   object-position: center;
+}
+.gallery-item:hover .gallery-item__image {
   will-change: transform;
 }
 
@@ -2467,7 +2519,7 @@ footer {
 
 @media (max-width: 767px) {
   .floating-nav {
-    bottom: var(--space-4);
+    display: none !important;
   }
 
   .floating-nav__item {
@@ -2500,18 +2552,15 @@ footer {
 
 /* Depth plane utility classes for layered animations */
 .depth-bg {
-  will-change: transform;
   perspective: 1200px;
 }
 
 .depth-surface {
-  will-change: transform;
   perspective: 1200px;
   transform-style: preserve-3d;
 }
 
 .depth-foreground {
-  will-change: transform;
   perspective: 1200px;
   transform-style: preserve-3d;
 }
@@ -2582,7 +2631,7 @@ footer {
 }
 
 /* Ensure magnetic buttons have smooth internal transitions */
-.btn {
+.btn:hover {
   will-change: transform;
 }
 
@@ -2592,6 +2641,13 @@ footer {
 
 .gallery-section__header {
   margin-bottom: var(--space-12);
+}
+
+/* Gallery grid: break out of standard container padding so the grid
+   spans near edge-to-edge — gives the 12-column editorial layout full
+   horizontal presence instead of being framed by 48px dead margins. */
+.gallery-section > .container:not(.gallery-section__header) {
+  padding-inline: 1rem !important;
 }
 
 .rail-container {
@@ -2816,6 +2872,10 @@ button,
 a[role="button"],
 [role="button"] {
   transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+}
+button:hover,
+a[role="button"]:hover,
+[role="button"]:hover {
   will-change: transform;
 }
 
@@ -2841,19 +2901,5 @@ a[role="button"],
   .work__card-inner,
   .hero__visual-wrap {
     perspective: none !important;
-  }
-}
-/* Hero responsive — moved from inline <style> to avoid SSR hydration mismatch */
-@media (max-width: 1023px) {
-  .hero-content-grid {
-    grid-template-columns: 1fr !important;
-  }
-  .hero-content-grid > *:last-child {
-    justify-content: center !important;
-  }
-}
-@media (max-width: 767px) {
-  .hero-content-grid > div:last-child {
-    display: none;
   }
 }
