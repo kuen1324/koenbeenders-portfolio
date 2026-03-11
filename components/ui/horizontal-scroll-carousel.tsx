@@ -275,8 +275,8 @@ export default function Gallery({ sectionRef }: GalleryProps) {
                                         className="gallery-item__image"
                                         fill
                                         loading="lazy"
-                                        quality={80}
-                                        sizes="(max-width: 639px) 100vw, (max-width: 1024px) 50vw, 400px"
+                                        quality={100}
+                                        sizes="(max-width: 639px) 100vw, (max-width: 1024px) 50vw, 800px"
                                     />
                                 </div>
                                 <div className="gallery-item__overlay">
