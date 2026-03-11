@@ -7,12 +7,16 @@ const isSafari = typeof window !== 'undefined'
     ? /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
     : false;
 
+const isMobile = typeof window !== 'undefined'
+    ? window.matchMedia('(max-width: 767px)').matches
+    : false;
+
 export default function CustomCursor() {
     const dotRef = useRef<HTMLDivElement>(null);
     const ringRef = useRef<HTMLDivElement>(null);
 
-    // Safari: no custom cursor — GSAP + DOM cursor elements add pointer compositor latency
-    if (isSafari) return null;
+    // No custom cursor on Safari or mobile
+    if (isSafari || isMobile) return null;
 
     useGSAP(() => {
         const dot = dotRef.current;
