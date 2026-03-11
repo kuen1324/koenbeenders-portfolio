@@ -2938,8 +2938,7 @@ html.safari .mood-bg {
 html.safari .floating-nav__pill {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  background: rgba(10, 10, 14, 0.92) !important;
-  border-color: rgba(255, 255, 255, 0.14) !important;
+  /* Keep JS-driven background intact — removing background here lets scroll-state classes apply */
 }
 
 /* Remove expensive blur from contact section glow */
@@ -2954,14 +2953,15 @@ html.safari .gallery-lightbox {
   background: rgba(5, 5, 8, 0.96) !important;
 }
 
-/* Safari hover responsiveness — restore default cursor and shorten transitions */
-html.safari,
-html.safari * {
-  cursor: auto !important;
-}
+/* Safari: restore pointer cursor on interactive elements (no custom cursor active) */
 html.safari a,
 html.safari button,
-html.safari [role="button"] {
+html.safari [role="button"],
+html.safari .gallery-item__interaction,
+html.safari .floating-nav__item,
+html.safari .work__card,
+html.safari [onclick],
+html.safari [tabindex] {
   cursor: pointer !important;
 }
 
@@ -2973,4 +2973,9 @@ html.safari .btn,
 html.safari .floating-nav__item,
 html.safari .floating-nav__pill {
   transition-duration: 0.15s !important;
+}
+
+/* Remove paint-heavy box-shadow transition from gallery in Safari */
+html.safari .gallery-item__interaction {
+  box-shadow: none !important;
 }
