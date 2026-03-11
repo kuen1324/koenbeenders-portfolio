@@ -54,6 +54,11 @@ const useInstanceId = (): string => {
     return instanceId;
 };
 
+// Detect Safari once at module level to avoid per-render cost
+const isSafari = typeof window !== 'undefined'
+    ? /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+    : false;
+
 export function Component({
     sizing = 'fill',
     color = 'rgba(128, 128, 128, 1)',
@@ -69,7 +74,10 @@ export function Component({
     const hueRotateAnimation = useRef<AnimationPlaybackControls | null>(null);
 
     const displacementScale = animation ? mapRange(animation.scale, 1, 100, 20, 100) : 0;
-    const animationDuration = animation ? mapRange(animation.speed, 1, 100, 1000, 50) : 1;
+    // Safari: slow down animation to reduce per-frame repaint cost
+    const animationDuration = animation
+        ? mapRange(animation.speed, 1, 100, 1000, 50) * (isSafari ? 2.5 : 1)
+        : 1;
 
     useEffect(() => {
         if (feColorMatrixRef.current && animationEnabled) {
@@ -123,7 +131,7 @@ export function Component({
                             <filter id={id}>
                                 <feTurbulence
                                     result="undulation"
-                                    numOctaves="2"
+                                    numOctaves={isSafari ? "1" : "2"}
                                     baseFrequency={`${mapRange(animation.scale, 0, 100, 0.001, 0.0005)},${mapRange(animation.scale, 0, 100, 0.004, 0.002)}`}
                                     seed="0"
                                     type="turbulence"
@@ -146,12 +154,14 @@ export function Component({
                                     scale={displacementScale}
                                     result="dist"
                                 />
-                                <feDisplacementMap
-                                    in="dist"
-                                    in2="undulation"
-                                    scale={displacementScale}
-                                    result="output"
-                                />
+                                {!isSafari && (
+                                    <feDisplacementMap
+                                        in="dist"
+                                        in2="undulation"
+                                        scale={displacementScale}
+                                        result="output"
+                                    />
+                                )}
                             </filter>
                         </defs>
                     </svg>

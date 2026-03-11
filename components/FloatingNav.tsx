@@ -84,14 +84,13 @@ export default function FloatingNav() {
                 ref={pillRef}
                 style={{
                     background: scrolled ? 'rgba(250, 248, 244, 0.6)' : 'rgba(255, 255, 255, 0.06)',
-                    backdropFilter: scrolled ? 'blur(16px)' : 'blur(8px)',
                     border: scrolled ? '1px solid rgba(255, 255, 255, 0.45)' : '1px solid rgba(255, 255, 255, 0.12)',
                     boxShadow: scrolled ? '0 10px 40px -10px rgba(0, 0, 0, 0.12)' : 'none',
                     padding: '8px 12px',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '24px',
-                    transition: 'all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1)'
+                    transition: 'background 0.5s cubic-bezier(0.215, 0.61, 0.355, 1), border 0.5s cubic-bezier(0.215, 0.61, 0.355, 1), box-shadow 0.5s cubic-bezier(0.215, 0.61, 0.355, 1)'
                 }}
             >
                 {/* Logo / Name */}

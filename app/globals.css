@@ -179,6 +179,8 @@ body {
   );
   transition: background var(--mood-transition);
   opacity: 0.8;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 /* Global Cinematic Noise Overlay */
@@ -189,7 +191,11 @@ body {
   pointer-events: none;
   opacity: 0.05;
   mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-image: url("/textures/noise.png");
+  background-size: 200px 200px;
+  background-repeat: repeat;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 #main {
@@ -1347,7 +1353,7 @@ iframe {
   background: radial-gradient(circle, rgba(255, 255, 255, 0.04) 0%, transparent 70%);
   top: -250px;
   right: -150px;
-  filter: blur(100px);
+  filter: blur(50px);
   pointer-events: none;
 }
 
@@ -2420,8 +2426,8 @@ footer {
   position: relative;
   /* Warmer pearl glass */
   background: rgba(250, 248, 244, 0.15);
-  backdrop-filter: blur(14px) saturate(220%) brightness(1.08);
-  -webkit-backdrop-filter: blur(14px) saturate(220%) brightness(1.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   /* Luminous border — top catches light, bottom fades */
   border: 1px solid rgba(255, 255, 255, 0.45);
   border-bottom-color: rgba(255, 255, 255, 0.15);
