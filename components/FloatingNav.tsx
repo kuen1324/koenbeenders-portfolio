@@ -10,16 +10,27 @@ const navItems = [
     { id: "about", label: "About" },
 ];
 
+// A section becomes active when its top edge has scrolled to this fraction
+// of the viewport height. 0.45 = just below mid-screen — natural "dominant" feel.
+const ACTIVATION_THRESHOLD = 0.45;
+
 export default function FloatingNav() {
     const [active, setActive] = useState("");
     const [scrolled, setScrolled] = useState(false);
     const [indicatorStyle, setIndicatorStyle] = useState({ translateX: 0, width: 0, opacity: 0 });
 
-    // itemWrapperRefs measure each nav item — placed OUTSIDE MagneticEffect so
-    // React.cloneElement inside MagneticEffect cannot override these refs.
+    // itemWrapperRefs — placed OUTSIDE MagneticEffect so cloneElement cannot override.
     const itemWrapperRefs = useRef<(HTMLDivElement | null)[]>([]);
-    // linksContainerRef is the position:relative parent of the indicator element.
+    // linksContainerRef — the position:relative parent of the indicator.
     const linksContainerRef = useRef<HTMLDivElement>(null);
+    // Mirrors active state so event handlers always see the current value
+    // without needing it in their dependency arrays (avoids stale closures).
+    const activeRef = useRef("");
+    // Prevents scroll spy from overriding active during smooth-scroll navigation.
+    const clickLockRef = useRef(false);
+    const clickLockTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    // rAF handle for scroll throttling.
+    const scrollRaf = useRef<number | null>(null);
 
     const updateIndicator = useCallback((index: number) => {
         const wrapper = itemWrapperRefs.current[index];
@@ -37,49 +48,112 @@ export default function FloatingNav() {
         });
     }, []);
 
-    // Update indicator on active change and resize
+    // Reposition indicator when active section changes.
     useEffect(() => {
         const idx = navItems.findIndex((item) => item.id === active);
         updateIndicator(idx);
+    }, [active, updateIndicator]);
 
+    // Resize: re-measure without depending on active state in deps
+    // (reads from activeRef to avoid stale closure).
+    useEffect(() => {
         const onResize = () => {
-            const i = navItems.findIndex((item) => item.id === active);
-            updateIndicator(i);
+            const idx = navItems.findIndex((item) => item.id === activeRef.current);
+            updateIndicator(idx);
         };
         window.addEventListener("resize", onResize, { passive: true });
         return () => window.removeEventListener("resize", onResize);
-    }, [active, updateIndicator]);
+    }, [updateIndicator]);
 
-    // Scroll state: transparent at top, background on scroll
+    // Scroll background state: transparent at top, glass pill on scroll.
     useEffect(() => {
-        const handleScroll = () => {
-            setScrolled(window.scrollY > 50);
+        const onScroll = () => setScrolled(window.scrollY > 50);
+        window.addEventListener("scroll", onScroll, { passive: true });
+        onScroll();
+        return () => window.removeEventListener("scroll", onScroll);
+    }, []);
+
+    // ─── Core scrollspy ───────────────────────────────────────────────────────
+    // Position-based, not ratio-based. Ratio-based approaches fail when sections
+    // are taller than the viewport (ratio never reaches the threshold).
+    //
+    // Algorithm:
+    //   For each nav section, compute how far its top edge is ABOVE the activation
+    //   threshold line. The section with the smallest positive distance wins —
+    //   meaning it most recently crossed the threshold while scrolling down.
+    //   When scrolling back past all sections, active clears ("").
+    useEffect(() => {
+        const getActiveSection = (): string => {
+            const thresholdPx = window.innerHeight * ACTIVATION_THRESHOLD;
+            let result = "";
+            let minDist = Infinity;
+
+            for (const { id } of navItems) {
+                const el = document.getElementById(id);
+                if (!el) continue;
+                const top = el.getBoundingClientRect().top;
+                // dist > 0: section top is above the threshold (has entered the active zone)
+                const dist = thresholdPx - top;
+                if (dist >= 0 && dist < minDist) {
+                    minDist = dist;
+                    result = id;
+                }
+            }
+            return result;
         };
-        window.addEventListener("scroll", handleScroll, { passive: true });
-        handleScroll();
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
 
-    // Scrollspy via IntersectionObserver
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
-                        setActive(entry.target.id);
-                    }
-                });
-            },
-            { threshold: [0.1, 0.3, 0.6], rootMargin: "-20% 0px -30% 0px" }
-        );
-        navItems.forEach(({ id }) => {
-            const el = document.getElementById(id);
-            if (el) observer.observe(el);
-        });
-        return () => observer.disconnect();
-    }, []);
+        const syncActive = () => {
+            // Don't fight the smooth-scroll initiated by handleClick
+            if (clickLockRef.current) return;
+            const newActive = getActiveSection();
+            if (newActive !== activeRef.current) {
+                activeRef.current = newActive;
+                setActive(newActive);
+            }
+        };
+
+        const onScroll = () => {
+            // rAF throttle: one measurement per frame maximum
+            if (scrollRaf.current !== null) return;
+            scrollRaf.current = requestAnimationFrame(() => {
+                scrollRaf.current = null;
+                syncActive();
+            });
+        };
+
+        window.addEventListener("scroll", onScroll, { passive: true });
+
+        // Initial sync — dynamic imports mean sections may not be in the DOM yet.
+        // Poll up to 3 seconds (20 × 150ms) until at least one section appears.
+        let attempts = 0;
+        const tryInit = () => {
+            const hasSections = navItems.some(({ id }) => !!document.getElementById(id));
+            if (hasSections) {
+                syncActive();
+            } else if (attempts < 20) {
+                attempts++;
+                setTimeout(tryInit, 150);
+            }
+        };
+        setTimeout(tryInit, 80);
+
+        return () => {
+            window.removeEventListener("scroll", onScroll);
+            if (scrollRaf.current !== null) cancelAnimationFrame(scrollRaf.current);
+        };
+    }, []); // stable: only refs and setActive (stable setter) used inside
 
     const handleClick = useCallback((id: string) => {
+        // Engage click lock so scroll spy doesn't clear active while smooth-scrolling.
+        // Lock duration covers max smooth-scroll animation time (~1s).
+        if (clickLockTimer.current) clearTimeout(clickLockTimer.current);
+        clickLockRef.current = true;
+        clickLockTimer.current = setTimeout(() => {
+            clickLockRef.current = false;
+        }, 1200);
+
+        // Move pill immediately on click — don't wait for scroll to reach section.
+        activeRef.current = id;
         setActive(id);
         const el = document.getElementById(id);
         if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -87,7 +161,7 @@ export default function FloatingNav() {
 
     return (
         <div
-            className={`floating-nav floating-nav--visible`}
+            className="floating-nav floating-nav--visible"
             role="navigation"
             aria-label="Main navigation"
         >
@@ -125,7 +199,7 @@ export default function FloatingNav() {
                     Koen Beenders
                 </Link>
 
-                {/* Center Links — position:relative parent of the indicator */}
+                {/* Center links — position:relative is the indicator's offset parent */}
                 <div style={{ display: 'flex', position: 'relative' }} ref={linksContainerRef}>
                     <div
                         className="floating-nav__indicator"
@@ -137,8 +211,8 @@ export default function FloatingNav() {
                     />
 
                     {navItems.map((item, i) => (
-                        // Wrapper div is the measurement anchor — outside MagneticEffect so
-                        // its ref is never overridden by MagneticEffect's cloneElement call.
+                        // Wrapper div is the measurement anchor — lives outside MagneticEffect
+                        // so React.cloneElement inside MagneticEffect never touches this ref.
                         <div
                             key={item.id}
                             ref={(el) => { itemWrapperRefs.current[i] = el; }}
