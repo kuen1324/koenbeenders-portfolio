@@ -19,7 +19,8 @@ export default function LenisProvider({ children }: { children: React.ReactNode 
         // Store callback reference so it can be removed on cleanup
         const rafCallback = (time: number) => lenis.raf(time * 1000);
         gsap.ticker.add(rafCallback);
-        gsap.ticker.lagSmoothing(0);
+        // Allow lag smoothing up to 500ms — prevents runaway animation on slow devices/tab resume
+        gsap.ticker.lagSmoothing(500, 33);
 
         return () => {
             gsap.ticker.remove(rafCallback);

@@ -15,20 +15,32 @@ export default function CustomCursor() {
         const xDot = gsap.quickSetter(dot, 'x', 'px');
         const yDot = gsap.quickSetter(dot, 'y', 'px');
 
-        const onMove = (e: MouseEvent) => {
-            const x = (e.clientX / window.innerWidth) * 100;
-            const y = (e.clientY / window.innerHeight) * 100;
-            document.documentElement.style.setProperty('--mouse-x', `${x}%`);
-            document.documentElement.style.setProperty('--mouse-y', `${y}%`);
+        let rafId: number | null = null;
+        let pendingX = 0;
+        let pendingY = 0;
 
-            xDot(e.clientX);
-            yDot(e.clientY);
-            gsap.to(ring, {
-                x: e.clientX,
-                y: e.clientY,
-                duration: 0.55,
-                ease: 'power3.out',
-                overwrite: true,
+        const onMove = (e: MouseEvent) => {
+            pendingX = e.clientX;
+            pendingY = e.clientY;
+
+            if (rafId !== null) return; // Already scheduled
+            rafId = requestAnimationFrame(() => {
+                rafId = null;
+                // Update CSS variables once per frame — prevents gradient repaint on every pixel
+                const x = (pendingX / window.innerWidth) * 100;
+                const y = (pendingY / window.innerHeight) * 100;
+                document.documentElement.style.setProperty('--mouse-x', `${x}%`);
+                document.documentElement.style.setProperty('--mouse-y', `${y}%`);
+
+                xDot(pendingX);
+                yDot(pendingY);
+                gsap.to(ring, {
+                    x: pendingX,
+                    y: pendingY,
+                    duration: 0.55,
+                    ease: 'power3.out',
+                    overwrite: true,
+                });
             });
         };
         window.addEventListener('mousemove', onMove);
@@ -65,6 +77,7 @@ export default function CustomCursor() {
         document.addEventListener('mouseout', onLeave as EventListener, { passive: true });
 
         return () => {
+            if (rafId !== null) cancelAnimationFrame(rafId);
             window.removeEventListener('mousemove', onMove);
             document.removeEventListener('mouseover', onEnter as EventListener);
             document.removeEventListener('mouseout', onLeave as EventListener);

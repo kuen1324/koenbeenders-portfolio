@@ -8,6 +8,9 @@ import MagneticEffect from './ui/MagneticEffect';
 import { use3DCursorTilt } from '@/hooks/use3DCursorTilt';
 import { Component as EtheralShadow } from './ui/etheral-shadow';
 
+// Detect mobile once — disables heavy SVG filter animation on touch devices
+const isMobileDevice = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
+
 export default function HeroSection() {
   const containerRef = useRef<HTMLElement>(null);
   const portraitRef = useRef<HTMLDivElement>(null);
@@ -68,7 +71,7 @@ export default function HeroSection() {
       >
         <EtheralShadow
           color="rgba(200, 200, 215, 0.75)"
-          animation={{ scale: 100, speed: 90 }}
+          animation={isMobileDevice ? { scale: 0, speed: 0 } : { scale: 100, speed: 90 }}
           noise={{ opacity: 1, scale: 1.2 }}
           sizing="fill"
           style={{ width: '100%', height: '100%' }}

@@ -80,10 +80,10 @@ export function Component({
         : 1;
 
     useEffect(() => {
-        if (feColorMatrixRef.current && animationEnabled) {
-            if (hueRotateAnimation.current) {
-                hueRotateAnimation.current.stop();
-            }
+        if (!feColorMatrixRef.current || !animationEnabled) return;
+
+        const startAnimation = () => {
+            if (hueRotateAnimation.current) hueRotateAnimation.current.stop();
             hueRotateMotionValue.set(0);
             hueRotateAnimation.current = animate(hueRotateMotionValue, 360, {
                 duration: animationDuration / 25,
@@ -98,13 +98,22 @@ export function Component({
                     }
                 }
             });
+        };
 
-            return () => {
-                if (hueRotateAnimation.current) {
-                    hueRotateAnimation.current.stop();
-                }
-            };
-        }
+        const stopAnimation = () => hueRotateAnimation.current?.stop();
+
+        // Only run when tab is visible — prevents background CPU waste
+        if (!document.hidden) startAnimation();
+
+        const handleVisibility = () => {
+            document.hidden ? stopAnimation() : startAnimation();
+        };
+        document.addEventListener('visibilitychange', handleVisibility);
+
+        return () => {
+            stopAnimation();
+            document.removeEventListener('visibilitychange', handleVisibility);
+        };
     }, [animationEnabled, animationDuration, hueRotateMotionValue]);
 
     return (

@@ -39,6 +39,7 @@ export default function Gallery({ sectionRef }: GalleryProps) {
     const [lightbox, setLightbox] = useState<GalleryImage | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+    const mouseMoveRaf = useRef<number | null>(null);
 
     // Update mood colors
     const updateMoodColors = useCallback((colors: [string, string]) => {
@@ -143,48 +144,49 @@ export default function Gallery({ sectionRef }: GalleryProps) {
         });
     };
 
-    // Premium Bounded 3D Mouse Tracking
+    // Premium Bounded 3D Mouse Tracking — rAF throttled to prevent layout thrash
     const handleMouseMove = (index: number, e: React.MouseEvent<HTMLDivElement>) => {
-        const item = itemRefs.current[index];
-        if (!item) return;
-
         if (window.matchMedia("(max-width: 639px)").matches) return;
+        if (mouseMoveRaf.current !== null) return; // Already a frame pending
 
-        const interactionLayer = item.querySelector(".gallery-item__interaction");
-        const img = item.querySelector(".gallery-item__image");
-        if (!interactionLayer || !img) return;
+        const clientX = e.clientX;
+        const clientY = e.clientY;
 
-        const rect = interactionLayer.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
+        mouseMoveRaf.current = requestAnimationFrame(() => {
+            mouseMoveRaf.current = null;
+            const item = itemRefs.current[index];
+            if (!item) return;
 
-        const xPercent = (e.clientX - centerX) / (rect.width / 2); // -1 to 1
-        const yPercent = (e.clientY - centerY) / (rect.height / 2); // -1 to 1
+            const interactionLayer = item.querySelector(".gallery-item__interaction");
+            const img = item.querySelector(".gallery-item__image");
+            if (!interactionLayer || !img) return;
 
-        const maxRotate = 4; // ±4deg (spec requirement)
-        const maxShiftX = 6;   // ±6px (spec requirement)
-        const maxShiftY = 6;   // ±6px (spec requirement)
+            const rect = interactionLayer.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
 
-        const rotateY = xPercent * maxRotate;
-        const rotateX = yPercent * -maxRotate; // Invert Y axis for natural tilt
+            const xPercent = (clientX - centerX) / (rect.width / 2);
+            const yPercent = (clientY - centerY) / (rect.height / 2);
 
-        const imgShiftX = xPercent * -maxShiftX;
-        const imgShiftY = yPercent * -maxShiftY;
+            const maxRotate = 4;
+            const maxShiftX = 6;
+            const maxShiftY = 6;
 
-        gsap.to(interactionLayer, {
-            rotateX,
-            rotateY,
-            duration: 0.4,
-            ease: "power2.out",
-            overwrite: "auto",
-        });
+            gsap.to(interactionLayer, {
+                rotateX: yPercent * -maxRotate,
+                rotateY: xPercent * maxRotate,
+                duration: 0.4,
+                ease: "power2.out",
+                overwrite: "auto",
+            });
 
-        gsap.to(img, {
-            x: imgShiftX,
-            y: imgShiftY,
-            duration: 0.4,
-            ease: "power2.out",
-            overwrite: "auto",
+            gsap.to(img, {
+                x: xPercent * -maxShiftX,
+                y: yPercent * -maxShiftY,
+                duration: 0.4,
+                ease: "power2.out",
+                overwrite: "auto",
+            });
         });
     };
 
