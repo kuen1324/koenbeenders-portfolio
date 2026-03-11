@@ -10,21 +10,27 @@ import { Component as EtheralShadow } from './ui/etheral-shadow';
 
 // Detect mobile once — disables heavy SVG filter animation on touch devices
 const isMobileDevice = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
+// Detect Safari — disables parallax and bloom filter to prevent scroll jank
+const isSafariDevice = typeof window !== 'undefined'
+  ? /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+  : false;
 
 export default function HeroSection() {
   const containerRef = useRef<HTMLElement>(null);
   const portraitRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
 
+  // Disable parallax for reduced motion AND Safari (avoids scroll-linked repaint cost)
+  const disableParallax = shouldReduceMotion || isSafariDevice;
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start start', 'end start'],
   });
 
-  // Disable parallax when reduced motion is preferred
-  const y1 = useTransform(scrollYProgress, [0, 1], shouldReduceMotion ? [0, 0] : [0, 120]);
-  const y2 = useTransform(scrollYProgress, [0, 1], shouldReduceMotion ? [0, 0] : [0, -60]);
-  const opacity = useTransform(scrollYProgress, [0, 0.45], [1, 0]);
+  const y1 = useTransform(scrollYProgress, [0, 1], disableParallax ? [0, 0] : [0, 120]);
+  const y2 = useTransform(scrollYProgress, [0, 1], disableParallax ? [0, 0] : [0, -60]);
+  const opacity = useTransform(scrollYProgress, [0, 0.45], disableParallax ? [1, 1] : [1, 0]);
 
   // Portrait hover tilt — GSAP attaches to portraitRef (plain div)
   // Framer Motion runs on inner layers — no transform conflict
@@ -291,7 +297,7 @@ export default function HeroSection() {
             justifyContent: 'flex-end',
           }}
         >
-          {/* Directional bloom — top-right light source */}
+          {/* Directional bloom — top-right light source. Skip blur in Safari (large repaint area) */}
           <motion.div
             initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -304,7 +310,7 @@ export default function HeroSection() {
               width: '90%',
               height: '60%',
               background: 'radial-gradient(ellipse at 70% 20%, rgba(255,255,255,0.07) 0%, transparent 70%)',
-              filter: 'blur(30px)',
+              filter: isSafariDevice ? 'none' : 'blur(30px)',
               zIndex: 0,
               pointerEvents: 'none',
             }}

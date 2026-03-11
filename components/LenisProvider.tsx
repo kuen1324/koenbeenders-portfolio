@@ -8,6 +8,18 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function LenisProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
+        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+        // Add browser class to <html> for CSS-based Safari overrides
+        document.documentElement.classList.add(isSafari ? 'safari' : 'not-safari');
+
+        if (isSafari) {
+            // Safari: use native scroll. Lenis's RAF loop conflicts with Safari's
+            // native momentum compositing, causing severe scroll jank.
+            // ScrollTrigger will automatically use native scroll events.
+            return;
+        }
+
         const lenis = new Lenis({
             duration: 1.2,
             easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -16,16 +28,13 @@ export default function LenisProvider({ children }: { children: React.ReactNode 
         });
 
         lenis.on('scroll', ScrollTrigger.update);
-        // Store callback reference so it can be removed on cleanup
         const rafCallback = (time: number) => lenis.raf(time * 1000);
         gsap.ticker.add(rafCallback);
-        // Allow lag smoothing up to 500ms — prevents runaway animation on slow devices/tab resume
         gsap.ticker.lagSmoothing(500, 33);
 
         return () => {
             gsap.ticker.remove(rafCallback);
             lenis.destroy();
-            ScrollTrigger.getAll().forEach(t => t.kill());
         };
     }, []);
 

@@ -2914,3 +2914,42 @@ a[role="button"]:hover,
     perspective: none !important;
   }
 }
+
+/* ============================================
+   SAFARI PERFORMANCE MODE
+   Applied when LenisProvider detects Safari and
+   adds class="safari" to <html>.
+   Removes effects that cause Safari compositing lag.
+   ============================================ */
+
+/* Remove mix-blend-mode from cursor — forces full-page compositing in Safari */
+html.safari .cursor--dot,
+html.safari .cursor--ring {
+  mix-blend-mode: normal !important;
+  opacity: 0.55;
+}
+
+/* Remove mouse-tracking gradient — triggers fixed-layer repaint on every mousemove */
+html.safari .mood-bg {
+  display: none !important;
+}
+
+/* Remove backdrop-filter from floating nav — causes recomposition on every scroll */
+html.safari .floating-nav__pill {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(10, 10, 14, 0.92) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+}
+
+/* Remove expensive blur from contact section glow */
+html.safari .contact::before {
+  filter: none !important;
+}
+
+/* Remove gallery lightbox backdrop-filter */
+html.safari .gallery-lightbox {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(5, 5, 8, 0.96) !important;
+}

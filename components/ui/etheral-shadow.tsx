@@ -68,16 +68,14 @@ export function Component({
     className
 }: ShadowOverlayProps) {
     const id = useInstanceId();
-    const animationEnabled = animation && animation.scale > 0;
     const feColorMatrixRef = useRef<SVGFEColorMatrixElement>(null);
     const hueRotateMotionValue = useMotionValue(180);
     const hueRotateAnimation = useRef<AnimationPlaybackControls | null>(null);
 
     const displacementScale = animation ? mapRange(animation.scale, 1, 100, 20, 100) : 0;
-    // Safari: slow down animation to reduce per-frame repaint cost
-    const animationDuration = animation
-        ? mapRange(animation.speed, 1, 100, 1000, 50) * (isSafari ? 2.5 : 1)
-        : 1;
+    const animationDuration = animation ? mapRange(animation.speed, 1, 100, 1000, 50) : 1;
+    // Safari: fully disable JS-driven SVG filter animation — per-frame attribute writes cause severe jank
+    const animationEnabled = !isSafari && !!(animation && animation.scale > 0);
 
     useEffect(() => {
         if (!feColorMatrixRef.current || !animationEnabled) return;
