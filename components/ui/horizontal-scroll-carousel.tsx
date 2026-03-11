@@ -37,6 +37,12 @@ const DEFAULT_COLORS: [string, string] = ["rgba(100, 100, 110, 0.05)", "rgba(50,
 export default function Gallery({ sectionRef }: GalleryProps) {
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [lightbox, setLightbox] = useState<GalleryImage | null>(null);
+    // Preserve last image content so it stays visible during the close transition
+    const lastLightbox = useRef<GalleryImage | null>(null);
+    if (lightbox) lastLightbox.current = lightbox;
+    const displayImage = lightbox ?? lastLightbox.current;
+    const isLightboxOpen = !!lightbox;
+
     const containerRef = useRef<HTMLDivElement>(null);
     const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
     const mouseMoveRaf = useRef<number | null>(null);
@@ -301,36 +307,48 @@ export default function Gallery({ sectionRef }: GalleryProps) {
                 ))}
             </div>
 
-            {lightbox && (
-                <div
-                    className="gallery-lightbox"
-                    role="dialog"
-                    aria-modal="true"
+            {/* Lightbox: always mounted, toggled via opacity+visibility — avoids remount cost and
+                image re-decode on every open. lastLightbox ref preserves content during close. */}
+            <div
+                className="gallery-lightbox"
+                role="dialog"
+                aria-modal="true"
+                aria-hidden={!isLightboxOpen}
+                onClick={closeLightbox}
+                style={{
+                    opacity: isLightboxOpen ? 1 : 0,
+                    visibility: isLightboxOpen ? 'visible' : 'hidden',
+                    pointerEvents: isLightboxOpen ? 'auto' : 'none',
+                }}
+            >
+                <button
+                    className="gallery-lightbox__close"
                     onClick={closeLightbox}
+                    aria-label="Close"
                 >
-                    <div className="gallery-lightbox__backdrop" />
-                    <button
-                        className="gallery-lightbox__close"
-                        onClick={closeLightbox}
-                        aria-label="Close"
-                    >
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <line x1="18" y1="6" x2="6" y2="18" />
-                            <line x1="6" y1="6" x2="18" y2="18" />
-                        </svg>
-                    </button>
-                    <div className="gallery-lightbox__inner" onClick={(e) => e.stopPropagation()}>
-                        <div className="gallery-lightbox__image-wrap">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={lightbox.url} alt={lightbox.title} className="gallery-lightbox__image" />
-                        </div>
-                        <div className="gallery-lightbox__info">
-                            <p className="gallery-lightbox__title">{lightbox.title}</p>
-                            <span className="gallery-lightbox__meta">Visual Experiment &copy; 2025</span>
-                        </div>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                </button>
+                <div className="gallery-lightbox__inner" onClick={(e) => e.stopPropagation()}>
+                    <div className="gallery-lightbox__image-wrap">
+                        {displayImage && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                                src={displayImage.url}
+                                alt={displayImage.title}
+                                className="gallery-lightbox__image"
+                                decoding="async"
+                            />
+                        )}
+                    </div>
+                    <div className="gallery-lightbox__info">
+                        <p className="gallery-lightbox__title">{displayImage?.title}</p>
+                        <span className="gallery-lightbox__meta">Visual Experiment &copy; 2025</span>
                     </div>
                 </div>
-            )}
+            </div>
         </>
     );
 }

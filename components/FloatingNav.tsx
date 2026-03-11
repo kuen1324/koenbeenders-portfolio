@@ -13,32 +13,44 @@ const navItems = [
 export default function FloatingNav() {
     const [active, setActive] = useState("");
     const [scrolled, setScrolled] = useState(false);
-    const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, opacity: 0 });
-    const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
-    const pillRef = useRef<HTMLDivElement>(null);
+    const [indicatorStyle, setIndicatorStyle] = useState({ translateX: 0, width: 0, opacity: 0 });
+
+    // itemWrapperRefs measure each nav item — placed OUTSIDE MagneticEffect so
+    // React.cloneElement inside MagneticEffect cannot override these refs.
+    const itemWrapperRefs = useRef<(HTMLDivElement | null)[]>([]);
+    // linksContainerRef is the position:relative parent of the indicator element.
+    const linksContainerRef = useRef<HTMLDivElement>(null);
 
     const updateIndicator = useCallback((index: number) => {
-        const btn = buttonRefs.current[index];
-        const pill = pillRef.current;
-        if (!btn || !pill || index === -1) {
+        const wrapper = itemWrapperRefs.current[index];
+        const container = linksContainerRef.current;
+        if (!wrapper || !container || index === -1) {
             setIndicatorStyle(prev => ({ ...prev, opacity: 0 }));
             return;
         }
-        const btnRect = btn.getBoundingClientRect();
-        const pillRect = pill.getBoundingClientRect();
+        const wrapperRect = wrapper.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
         setIndicatorStyle({
-            left: btnRect.left - pillRect.left,
-            width: btnRect.width,
-            opacity: 1
+            translateX: wrapperRect.left - containerRect.left,
+            width: wrapperRect.width,
+            opacity: 1,
         });
     }, []);
 
+    // Update indicator on active change and resize
     useEffect(() => {
         const idx = navItems.findIndex((item) => item.id === active);
         updateIndicator(idx);
+
+        const onResize = () => {
+            const i = navItems.findIndex((item) => item.id === active);
+            updateIndicator(i);
+        };
+        window.addEventListener("resize", onResize, { passive: true });
+        return () => window.removeEventListener("resize", onResize);
     }, [active, updateIndicator]);
 
-    // Handle scroll state for the "transparent at top, blurred on scroll" rule
+    // Scroll state: transparent at top, background on scroll
     useEffect(() => {
         const handleScroll = () => {
             setScrolled(window.scrollY > 50);
@@ -48,7 +60,7 @@ export default function FloatingNav() {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    // Track active section with IntersectionObserver
+    // Scrollspy via IntersectionObserver
     useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
@@ -79,9 +91,8 @@ export default function FloatingNav() {
             role="navigation"
             aria-label="Main navigation"
         >
-            <div 
-                className="floating-nav__pill" 
-                ref={pillRef}
+            <div
+                className="floating-nav__pill"
                 style={{
                     background: scrolled ? 'rgba(250, 248, 244, 0.6)' : 'rgba(255, 255, 255, 0.06)',
                     border: scrolled ? '1px solid rgba(255, 255, 255, 0.45)' : '1px solid rgba(255, 255, 255, 0.12)',
@@ -114,52 +125,59 @@ export default function FloatingNav() {
                     Koen Beenders
                 </Link>
 
-                {/* Center Links */}
-                <div style={{ display: 'flex', position: 'relative' }}>
+                {/* Center Links — position:relative parent of the indicator */}
+                <div style={{ display: 'flex', position: 'relative' }} ref={linksContainerRef}>
                     <div
                         className="floating-nav__indicator"
                         style={{
-                            left: indicatorStyle.left,
+                            transform: `translateX(${indicatorStyle.translateX}px)`,
                             width: indicatorStyle.width,
                             opacity: indicatorStyle.opacity,
                         }}
                     />
 
                     {navItems.map((item, i) => (
-                        <MagneticEffect key={item.id} strength={0.2}>
-                            <button
-                                ref={(el) => { buttonRefs.current[i] = el; }}
-                                className={`floating-nav__item ${active === item.id ? "floating-nav__item--active" : ""}`}
-                                onClick={() => handleClick(item.id)}
-                                aria-label={`Navigate to ${item.label}`}
-                                aria-current={active === item.id ? "page" : undefined}
-                                style={{
-                                    display: 'block',
-                                    color: scrolled
-                                        ? (active === item.id ? 'rgba(0, 0, 0, 0.85)' : 'rgba(0, 0, 0, 0.4)')
-                                        : (active === item.id ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.6)'),
-                                    transition: 'color 0.4s ease',
-                                }}
-                            >
-                                <span className="floating-nav__label" style={{ display: 'block' }}>{item.label}</span>
-                            </button>
-                        </MagneticEffect>
+                        // Wrapper div is the measurement anchor — outside MagneticEffect so
+                        // its ref is never overridden by MagneticEffect's cloneElement call.
+                        <div
+                            key={item.id}
+                            ref={(el) => { itemWrapperRefs.current[i] = el; }}
+                            style={{ display: 'inline-flex' }}
+                        >
+                            <MagneticEffect strength={0.2}>
+                                <button
+                                    className={`floating-nav__item ${active === item.id ? "floating-nav__item--active" : ""}`}
+                                    onClick={() => handleClick(item.id)}
+                                    aria-label={`Navigate to ${item.label}`}
+                                    aria-current={active === item.id ? "page" : undefined}
+                                    style={{
+                                        display: 'block',
+                                        color: scrolled
+                                            ? (active === item.id ? 'rgba(0, 0, 0, 0.85)' : 'rgba(0, 0, 0, 0.4)')
+                                            : (active === item.id ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.6)'),
+                                        transition: 'color 0.4s ease',
+                                    }}
+                                >
+                                    <span className="floating-nav__label" style={{ display: 'block' }}>{item.label}</span>
+                                </button>
+                            </MagneticEffect>
+                        </div>
                     ))}
                 </div>
 
                 {/* Contact CTA */}
                 <MagneticEffect strength={0.2}>
-                    <Link 
-                        href="#contact" 
-                        className="btn btn--primary" 
-                        style={{ 
-                            padding: '10px 20px', 
-                            fontSize: '13px', 
+                    <Link
+                        href="#contact"
+                        className="btn btn--primary"
+                        style={{
+                            padding: '10px 20px',
+                            fontSize: '13px',
                             borderRadius: '99px',
                             marginLeft: '8px'
                         }}
                     >
-                        Let's Talk
+                        Let&apos;s Talk
                     </Link>
                 </MagneticEffect>
             </div>
